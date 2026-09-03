@@ -2,15 +2,83 @@ document.addEventListener('DOMContentLoaded', function () {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
-    tg.setHeaderColor('#173126');
-    tg.setBackgroundColor('#0b1f18');
-  // --- LIENS DE CONTACT 74 COFFEE ---
-  // Ajoute ici les nouveaux liens quand tu les as.
-  const contactLinks = [];
-
- // --- DONNÉES 74 COFFEE ---
- const appData = [
+    tg.setHeaderColor('#120b25');
+    tg.setBackgroundColor('#05030c');
+  // --- CONTACT MISTER FREEZE 74 ---
+  const ORDER_CONTACT_USERNAME = 'MISTERFREEZE74';
+  const ORDER_CONTACT_URL = `https://t.me/${ORDER_CONTACT_USERNAME}`;
+  const contactLinks = [
     {
+      name: 'TELEGRAM ❄️',
+      url: ORDER_CONTACT_URL,
+      id: 'telegram-contact',
+      className: 'telegram-contact',
+      text: '@MISTERFREEZE74 💬'
+    }
+  ];
+
+ // --- DONNÉES MISTER FREEZE 74 ---
+ const appData = [
+     {
+        id: 'EXTRA',
+        name: '⛄ EXTRA',
+        type: '⛄ EXTRA',
+        quality: '⛄ EXTRA',
+        image: 'CategVape.png',
+        farms: [
+
+            {
+                id: 'BLANCHE ⛰',
+                name: 'BLANCHE ⛰',
+                badgeText: 'BLANCHE ⛰',
+                products: [
+                    /* {
+                        id: '🌈 Runtz Californienne',
+                        name: '🌈 Runtz Californienne',
+                        flag: '🇺🇸',
+                        farm: 'Premium Quality 🏆',
+                        promoEligible: true,
+                        type: 'Weed',
+                        image: 'ProductCali.jpg',
+                        video: 'VideoCali.mov',
+                        description: 'La Runtz californienne est une variété d’exception qui attire immédiatement l’œil avec ses têtes compactes, colorées et ultra résineuses. On y retrouve de magnifiques nuances vert clair, parfois violettes, recouvertes d’une épaisse couche de trichomes brillants qui témoignent de sa qualité premium. ✨🌿  \n\n 👃 Arômes & Goût\n Dès l’ouverture, un parfum sucré et fruité envahit l’air. La Runtz est célèbre pour son goût de bonbons fruités, mêlant des notes de fruits tropicaux, de sucre et de crème douce. Une fumée douce, gourmande et très agréable, parfaite pour les amateurs de saveurs sucrées. 🍬🍓🥭 \n\n ⚡ Effets\n  La Runtz offre un équilibre parfait entre euphorie et détente.\n   🧠 High mental positif – sensation de bien-être et d’euphorie\n  😌 Relaxation corporelle – détente progressive et agréable \n\n  💎 Une variété venue de Californie, très recherchée pour son goût unique, sa puissance et la beauté de ses buds. Parfaite pour ceux qui veulent une expérience savoureuse et de haute qualité.',
+                        tarifs: [
+                            { weight: '1 bags 3.5G', price: 50.00 }, 
+                            { weight: '2 bags', price: 100.00 }, 
+                            { weight: '3 bags', price: 130.00 }, 
+                            { weight: '5 bags', price: 220.00 }
+                        ]
+                    } */
+                ]
+            },
+            {
+                id: 'EXTA 💊',
+                name: 'EXTA 💊',
+                badgeText: 'EXTA 💊',
+                products: [
+
+                ]
+            },
+            {
+                id: 'MDMA 🔎',
+                name: 'MDMA 🔎',
+                badgeText: 'MDMA 🔎',
+                products: [
+
+                ]
+            },
+            {
+                id: 'KETA 🌶️',
+                name: 'KETA 🌶️',
+                badgeText: 'KETA 🌶️',
+                products: [
+
+                ]
+            },
+            
+        ]
+    }
+   /*  {
         id: 'HASH',
         name: '🍫 HASH',
         type: 'Hash',
@@ -41,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     ]
                     }
                 ]
-            }, */
+            }, 
             {
                 id: 'MOUSS',
                 name: 'MOUSSEUX 🍯',
@@ -51,13 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         id: 'mouss-standard',
                         name: 'Jaune Mousseux',
                         flag: '🇲🇦',
-                        farm: '74 COFFEE SELECTION',
+                        farm: 'MISTER FREEZE 74 SELECTION',
                         promoEligible: true,
                         type: 'Hash',
                         image: 'ProductDry.jpg',
                         description: 'Texture parfaite, facile à effriter.',
                         tarifs: [{ weight: '10g', price: 40.00 }, { weight: '20g', price: 75.00 }]
-                    } */
+                    } 
                 ]
             },
             {
@@ -69,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         id: 'frozen-gmo-marocain',
                         name: '🌿 GMO – Marocain',
                         flag: '🇲🇦',
-                        farm: '🏹 74 COFFEE SELECTION',
+                        farm: '🏹 MISTER FREEZE 74 SELECTION',
                         promoEligible: true,
                         type: 'Hash',
                         image: 'ProductGmo.jpg',
@@ -100,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             { weight: '30g', price: 420.00 },
                             { weight: '50g', price: 550.00 }
                         ]
-                    } */
+                    } 
                 ]
             },
             {
@@ -125,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             { weight: '20g', price: 480.00 },
                             { weight: '50g', price: 1000.00 }
                         ]
-                    }, */
+                    }, 
                 ]
             },
         ]
@@ -158,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             { weight: '3 bags', price: 130.00 }, 
                             { weight: '5 bags', price: 220.00 }
                         ]
-                    } */
+                    } 
                 ]
             },
             {
@@ -176,38 +244,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         image: 'ProductCali.jpg',
                         description: 'Qualité canadienne supérieure.',
                         tarifs: [{ weight: '5g', price: 50.00 }, { weight: '10g', price: 90.00 }]
-                    } */
+                    } 
                 ]
             }
         ]
-    },
-    {
-        id: 'ZIP',
-        name: '⛄ ZIP',
-        type: '⛄ ZIP',
-        quality: '⛄ ZIP',
-        image: 'CatehVape.png',
-                products: [
-                   /*  {
-                        id: '95THC',
-                        name: '🔥 CALI PUFF 🔥',
-                        flag: '🇺🇸',
-                        farm: 'USA IMPORT ⛵',
-                        promoEligible: true,
-                        type: 'Vape',
-                        image: 'ProductVape.png',
-                        video: 'VideoVape1.mov',
-                        description: '🚫 95% THC 🌬 \n\n  Puissance. Style. Exclusivité.\n Plonge dans l’univers Cali Puff, une expérience haut de gamme pensée pour les amateurs de sensations fortes et de produits d’exception. Avec une concentration impressionnante de 95% de THC, Cali Puff s’impose comme une référence ultime en matière d’intensité et de pureté.\n\n 💎 Design iconique & audacieux\n Chaque Cali Puff est présenté dans un tube élégant et protecteur, avec un visuel percutant inspiré de la culture street et du luxe californien. Un produit qui attire immédiatement l’œil et affirme son caractère premium dès le premier regard.\n\n 🚀 Performance extrême\n Conçu pour les connaisseurs, Cali Puff offre une puissance exceptionnelle, destinée à ceux qui recherchent une expérience intense, rapide et marquante. Un concentré de savoir-faire pour un effet maximal.\n\n  💼 Format pratique & discret\n Facile à transporter, parfaitement protégé, chaque puff est prêt à accompagner les moments les plus exclusifs. Que ce soit pour la collection ou l’expérience, Cali Puff ne laisse rien au hasard.\n\n 🌴 L’esprit Cali, sans compromis\n Cali Puff incarne l’attitude californienne : audace, liberté et excellence.  \n\n 🌈 Deux profils aromatiques exclusifs :  \n\n 🔵 Framboise Bleue – Une explosion fruitée, sucrée et légèrement acidulée. Une saveur intense et vibrante qui séduit dès la première note.  \n\n 🍓 Fraise – Framboise – Myrtille – Un mélange gourmand et harmonieux de fruits rouges, combinant douceur, fraîcheur et profondeur aromatique.  \n ⚠️ Produit ultra-puissant – réservé aux utilisateurs expérimentés.',
-                        tarifs: [
-                            { weight: '1', price: 80.00 },
-                            { weight: '2', price: 150.00 },
-                            { weight: '3', price: 210.00 },
-                            { weight: '4', price: 260.00 },
-                            { weight: '5', price: 300.00 }
-                        ]
-                    } */
-                ]
-    }
+    }, */
 ];
        /*  // ===================================
         // 3. EXTRACT (Direct Produits)
@@ -386,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Style inline pour correspondre à ton design
         backButton.style.cssText = `
             background: linear-gradient(180deg, black, transparent); 
-            border-bottom: 2px solid #d7a34a;
+            border-bottom: 2px solid #2ed8ff;
             border-top: none; border-left: none; border-right: none;
             color: white; padding: 10px 15px; 
             border-radius: 10px; font-size: 1.1rem; 
@@ -643,7 +684,7 @@ ${product.description ? `<div class="product-description">${product.description}
     function renderContactPage() {
         const linksContainer = document.getElementById('contact-links-container');
         if (contactLinks.length === 0) {
-            linksContainer.innerHTML = '<div style="text-align:center;color:#b7b28a;padding:20px;">Nouveaux liens bientôt disponibles.</div>';
+            linksContainer.innerHTML = '<div style="text-align:center;color:#aaa8c7;padding:20px;">Contact indisponible.</div>';
             return;
         }
         linksContainer.innerHTML = contactLinks.map(link => `
@@ -974,8 +1015,21 @@ ${product.description ? `<div class="product-description">${product.description}
         }
 
         if (target.closest('#confirm-order-button')) {
-            showNotification('Coordonnée de commande non configurée pour 74 Coffee.');
-            tg.HapticFeedback.notificationOccurred('warning');
+            const message = formatOrderMessage();
+            const telegramUrl = `${ORDER_CONTACT_URL}?text=${encodeURIComponent(message)}`;
+
+            tg.HapticFeedback.notificationOccurred('success');
+            showNotification('❄️ Ouverture du contact @MISTERFREEZE74...');
+
+            try {
+                if (typeof tg.openTelegramLink === 'function') {
+                    tg.openTelegramLink(telegramUrl);
+                } else {
+                    window.open(telegramUrl, '_blank');
+                }
+            } catch (error) {
+                window.open(telegramUrl, '_blank');
+            }
         }
     });
 
