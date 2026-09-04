@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 name: 'BLANCHE ⛰',
                 badgeText: 'BLANCHE ⛰',
                 products: [
-                    /* {
+                    {
                         id: '🌈 Runtz Californienne',
                         name: '🌈 Runtz Californienne',
                         flag: '🇺🇸',
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             { weight: '3 bags', price: 130.00 }, 
                             { weight: '5 bags', price: 220.00 }
                         ]
-                    } */
+                    }
                 ]
             },
             {
