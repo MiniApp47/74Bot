@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tg.setHeaderColor('#120b25');
     tg.setBackgroundColor('#05030c');
   // --- CONTACT MISTER FREEZE 74 ---
-  const ORDER_CONTACT_USERNAME = 'MISTERFREEZE74';
+  const ORDER_CONTACT_USERNAME = 'MISTERFREEZ74';
   const ORDER_CONTACT_URL = `https://t.me/${ORDER_CONTACT_USERNAME}`;
   const contactLinks = [
     {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
       url: ORDER_CONTACT_URL,
       id: 'telegram-contact',
       className: 'telegram-contact',
-      text: '@MISTERFREEZE74 💬'
+      text: '@MISTERFREEZ74 💬'
     }
   ];
 
