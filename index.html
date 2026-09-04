@@ -1159,6 +1159,79 @@
             background-color: var(--tertiary-bg-color);
         }
 
+
+        /* --- FORMULAIRE COMMANDE TELEGRAM --- */
+        .order-delivery-form {
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(18, 11, 37, 0.88);
+            border: 1px solid rgba(46, 216, 255, 0.45);
+            border-radius: 16px;
+            box-shadow: 0 0 18px rgba(139, 61, 255, 0.16);
+        }
+
+        .order-delivery-form h4 {
+            margin: 0 0 12px 0;
+            text-align: center;
+            color: #dff8ff;
+        }
+
+        .delivery-mode-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .delivery-mode-btn {
+            padding: 13px 8px;
+            border-radius: 12px;
+            border: 1px solid #41325f;
+            background: #120b25;
+            color: #aaa8c7;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .delivery-mode-btn.active {
+            color: white;
+            border-color: #2ed8ff;
+            background: linear-gradient(135deg, rgba(117, 44, 255, .8), rgba(17, 168, 255, .65));
+            box-shadow: 0 0 12px rgba(46, 216, 255, .25);
+        }
+
+        .order-field {
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+            padding: 13px 14px;
+            border: 1px solid #41325f;
+            border-radius: 12px;
+            background: #090511;
+            color: #f5f7ff;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .order-field:focus {
+            border-color: #2ed8ff;
+            box-shadow: 0 0 0 2px rgba(46, 216, 255, .12);
+        }
+
+        textarea.order-field {
+            min-height: 90px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .order-form-note {
+            color: #aaa8c7;
+            font-size: .8rem;
+            text-align: center;
+            margin-top: 10px;
+            line-height: 1.35;
+        }
+
         /* Style pour le nouveau résumé du panier */
         /*  #confirmation-summary .summary-line {
             display: flex;
@@ -1603,6 +1676,18 @@
             <div id="confirmation-items-list">
             </div>
 
+            <div class="order-delivery-form">
+                <h4>📦 Mode de réception</h4>
+                <div class="delivery-mode-options">
+                    <button type="button" class="delivery-mode-btn active" data-mode="Livraison">🚚 Livraison</button>
+                    <button type="button" class="delivery-mode-btn" data-mode="Sur place">📍 Sur place</button>
+                </div>
+                <input id="order-address" class="order-field" type="text" autocomplete="street-address" placeholder="📍 Adresse de livraison *">
+                <input id="order-phone" class="order-field" type="tel" autocomplete="tel" placeholder="📞 Téléphone (optionnel)">
+                <textarea id="order-comment" class="order-field" maxlength="500" placeholder="📝 Commentaire (optionnel)"></textarea>
+                <div class="order-form-note">La commande sera envoyée directement au bot et tu recevras ici son suivi : acceptée, préparation, livraison, prête ou terminée.</div>
+            </div>
+
             <div class="promo-container">
                 <h4>Code Promo</h4>
                 <div id="promo-input-container">
@@ -1635,7 +1720,7 @@
             <button id="confirmation-modify-order" class="secondary-action-btn">✏️ Modifier</button>
 
             <button id="confirm-order-button" class="main-action-btn telegram-button">
-                ❄️ Envoyer la commande à @MISTERFREEZE74
+                ✅ CONFIRMER LA COMMANDE
             </button>
 
 

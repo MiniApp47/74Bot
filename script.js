@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tg.setHeaderColor('#120b25');
     tg.setBackgroundColor('#05030c');
   // --- CONTACT MISTER FREEZE 74 ---
-  const ORDER_CONTACT_USERNAME = 'MISTERFREEZ74';
+  const ORDER_CONTACT_USERNAME = 'MISTERFREEZE74';
   const ORDER_CONTACT_URL = `https://t.me/${ORDER_CONTACT_USERNAME}`;
   const contactLinks = [
     {
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
       url: ORDER_CONTACT_URL,
       id: 'telegram-contact',
       className: 'telegram-contact',
-      text: '@MISTERFREEZ74 💬'
+      text: '@MISTERFREEZE74 💬'
     }
   ];
 
@@ -25,9 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
         type: '⛄ EXTRA',
         quality: '⛄ EXTRA',
         image: 'CategVape.png',
-        farms: [
-
-            {
+           farms: [
+             {
                 id: 'BLANCHE ⛰',
                 name: 'BLANCHE ⛰',
                 badgeText: 'BLANCHE ⛰',
@@ -75,9 +74,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 ]
             },
-            
+           
         ]
-    }
+    },
    /*  {
         id: 'HASH',
         name: '🍫 HASH',
@@ -318,6 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentFarmId = null;
     let appliedPromo = null;
     let paymentMethod = 'Espèce';
+    let orderMode = 'Livraison';
 
     const validPromoCodes = {
         "ACTUPLUG33": { type: 'fixed', value: 10, appliesTo: 'eligible', cumulative: false }
@@ -668,6 +668,16 @@ ${product.description ? `<div class="product-description">${product.description}
             btn.classList.toggle('active', btn.dataset.method === paymentMethod);
         });
 
+        document.querySelectorAll('.delivery-mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === orderMode);
+        });
+        const addressInput = document.getElementById('order-address');
+        if (addressInput) {
+            const isDelivery = orderMode === 'Livraison';
+            addressInput.style.display = isDelivery ? 'block' : 'none';
+            addressInput.required = isDelivery;
+        }
+
         const summaryContainer = document.getElementById('confirmation-summary');
         let summaryHTML = `
             <div class="summary-line"><span>Sous-total:</span><span>${subTotal.toFixed(2)}€</span></div>
@@ -812,6 +822,51 @@ ${product.description ? `<div class="product-description">${product.description}
         else item.totalPrice = item.quantity * item.unitPrice;
         renderCart();
         if(document.getElementById('page-confirmation').classList.contains('active')) renderConfirmation();
+    }
+
+    function calculateOrderTotals() {
+        let subTotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+        let discount = 0;
+        if (appliedPromo) {
+            const promo = validPromoCodes[appliedPromo];
+            let discountableAmount = 0;
+            if (promo.appliesTo === 'eligible') {
+                cart.forEach(item => {
+                    const product = getProductById(item.productId);
+                    if (product && product.promoEligible) discountableAmount += item.totalPrice;
+                });
+            } else {
+                discountableAmount = subTotal;
+            }
+            if (promo.type === 'percent') discount = (discountableAmount * promo.value) / 100;
+            else discount = promo.value;
+        }
+        if (discount > subTotal) discount = subTotal;
+        return { subTotal, discount, totalPrice: subTotal - discount };
+    }
+
+    function buildOrderPayload() {
+        const { totalPrice } = calculateOrderTotals();
+        const address = (document.getElementById('order-address')?.value || '').trim();
+        const phone = (document.getElementById('order-phone')?.value || '').trim();
+        const comment = (document.getElementById('order-comment')?.value || '').trim();
+
+        return {
+            type: 'order',
+            mode: orderMode,
+            address,
+            phone,
+            comment,
+            payment: paymentMethod,
+            total: Number(totalPrice.toFixed(2)),
+            items: cart.map(item => ({
+                name: item.name,
+                weight: item.weight,
+                quantity: item.quantity,
+                unitPrice: Number(item.unitPrice.toFixed(2)),
+                totalPrice: Number(item.totalPrice.toFixed(2))
+            }))
+        };
     }
 
     function formatOrderMessage() {
@@ -976,6 +1031,22 @@ ${product.description ? `<div class="product-description">${product.description}
             renderConfirmation();
         }
 
+        if (target.closest('.delivery-mode-btn')) {
+            const btn = target.closest('.delivery-mode-btn');
+            orderMode = btn.dataset.mode || 'Livraison';
+            document.querySelectorAll('.delivery-mode-btn').forEach(el => {
+                el.classList.toggle('active', el === btn);
+            });
+            const addressInput = document.getElementById('order-address');
+            if (addressInput) {
+                const isDelivery = orderMode === 'Livraison';
+                addressInput.style.display = isDelivery ? 'block' : 'none';
+                addressInput.required = isDelivery;
+                if (!isDelivery) addressInput.value = '';
+            }
+            return;
+        }
+
         if (target.closest('.payment-btn')) {
             paymentMethod = target.closest('.payment-btn').dataset.method;
             document.querySelectorAll('.payment-btn').forEach(btn => {
@@ -1015,20 +1086,34 @@ ${product.description ? `<div class="product-description">${product.description}
         }
 
         if (target.closest('#confirm-order-button')) {
-            const message = formatOrderMessage();
-            const telegramUrl = `${ORDER_CONTACT_URL}?text=${encodeURIComponent(message)}`;
+            if (cart.length === 0) {
+                showNotification('❌ Ton panier est vide.');
+                return;
+            }
 
-            tg.HapticFeedback.notificationOccurred('success');
-            showNotification('❄️ Ouverture du contact @MISTERFREEZE74...');
+            const payload = buildOrderPayload();
+            if (payload.mode === 'Livraison' && !payload.address) {
+                showNotification('📍 Indique ton adresse de livraison.');
+                document.getElementById('order-address')?.focus();
+                return;
+            }
+
+            const rawData = JSON.stringify(payload);
+            if (rawData.length > 3900) {
+                showNotification('❌ Commande trop volumineuse. Réduis le panier ou le commentaire.');
+                return;
+            }
 
             try {
-                if (typeof tg.openTelegramLink === 'function') {
-                    tg.openTelegramLink(telegramUrl);
-                } else {
-                    window.open(telegramUrl, '_blank');
+                if (typeof tg.sendData !== 'function') {
+                    throw new Error('Telegram.WebApp.sendData indisponible');
                 }
+                tg.HapticFeedback.notificationOccurred('success');
+                showNotification('✅ Commande envoyée au bot !');
+                tg.sendData(rawData);
             } catch (error) {
-                window.open(telegramUrl, '_blank');
+                console.error(error);
+                showNotification('⚠️ Relance /start et ouvre la boutique avec le bouton du bot.');
             }
         }
     });
