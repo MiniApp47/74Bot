@@ -13,13 +13,85 @@ document.addEventListener('DOMContentLoaded', function () {
     const ORDER_CONTACT_URL = `https://t.me/${ORDER_CONTACT_USERNAME}`;
 
 const appData = [
-     {
-        id: 'EXTRA',
-        name: '⛄ EXTRA',
-        type: '⛄ EXTRA',
-        quality: '⛄ EXTRA',
+         {
+        id: 'WEED 🌿',
+        name: 'WEED 🌿',
+        type: 'WEED 🌿',
+        quality: 'WEED 🌿',
         image: 'CategVape.png',
-            farms: [
+        products: [
+                ]
+
+},
+         {
+        id: 'HASH 🍫',
+        name: 'HASH 🍫',
+        type: 'HASH 🍫',
+        quality: 'HASH 🍫',
+        image: 'CategVape.png',
+        products: [
+                ]
+
+},
+     {
+        id: 'BLANCHE ⛰',
+        name: 'BLANCHE ⛰',
+        type: 'BLANCHE ⛰',
+        quality: 'BLANCHE ⛰',
+        image: 'CategVape.png',
+        products: [
+                    {
+                        id: '🌈 Runtz Californienne',
+                        name: '🌈 Runtz Californienne',
+                        flag: '🇺🇸',
+                        farm: 'Premium Quality 🏆',
+                        promoEligible: true,
+                        type: 'Weed',
+                        image: 'ProductCali.jpg',
+                        video: 'VideoCali.mov',
+                        description: 'La Runtz californienne est une variété d’exception qui attire immédiatement l’œil avec ses têtes compactes, colorées et ultra résineuses. On y retrouve de magnifiques nuances vert clair, parfois violettes, recouvertes d’une épaisse couche de trichomes brillants qui témoignent de sa qualité premium. ✨🌿  \n\n 👃 Arômes & Goût\n Dès l’ouverture, un parfum sucré et fruité envahit l’air. La Runtz est célèbre pour son goût de bonbons fruités, mêlant des notes de fruits tropicaux, de sucre et de crème douce. Une fumée douce, gourmande et très agréable, parfaite pour les amateurs de saveurs sucrées. 🍬🍓🥭 \n\n ⚡ Effets\n  La Runtz offre un équilibre parfait entre euphorie et détente.\n   🧠 High mental positif – sensation de bien-être et d’euphorie\n  😌 Relaxation corporelle – détente progressive et agréable \n\n  💎 Une variété venue de Californie, très recherchée pour son goût unique, sa puissance et la beauté de ses buds. Parfaite pour ceux qui veulent une expérience savoureuse et de haute qualité.',
+                        tarifs: [
+                            { weight: '1 bags 3.5G', price: 50.00 }, 
+                            { weight: '2 bags', price: 100.00 }, 
+                            { weight: '3 bags', price: 130.00 }, 
+                            { weight: '5 bags', price: 220.00 }
+                        ]
+                    }
+                ]
+
+},
+     {
+        id: 'EXTA 💊',
+        name: 'EXTA 💊',
+        type: 'EXTA 💊',
+        quality: 'EXTA 💊',
+        image: 'CategVape.png',
+        products: [
+                ]
+
+},
+     {
+        id: 'MDMA 🔎',
+        name: 'MDMA 🔎',
+        type: 'MDMA 🔎',
+        quality: 'MDMA 🔎',
+        image: 'CategVape.png',
+        products: [
+                ]
+
+},
+     {
+        id: 'KETA 🌶️',
+        name: 'KETA 🌶️',
+        type: 'KETA 🌶️',
+        quality: 'KETA 🌶️',
+        image: 'CategVape.png',
+        products: [
+                ]
+
+},
+
+  /*           farms: [
              {
                 id: 'BLANCHE ⛰',
                 name: 'BLANCHE ⛰',
@@ -69,9 +141,9 @@ const appData = [
                 ]
             },
            
-        ]
+        ] */
         
-    },
+    
    /*  {
         id: 'HASH',
         name: '🍫 HASH',
