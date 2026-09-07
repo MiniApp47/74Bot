@@ -1,1772 +1,411 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MISTER FREEZE 74&🇨🇭 </title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            /* Palette de couleurs inspirée de tes captures */
-            --background-color: #05030c;
-            --secondary-bg-color: #120b25;
-            --tertiary-bg-color: #21103f;
-            --text-color: #f5f7ff;
-            --hint-color: #aaa8c7;
-            --accent-color: #2ed8ff;
-            --green-color: #34c759;
-            --red-color: #ff3b30;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            /* Couleur de fond si l'image ne charge pas */
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            overscroll-behavior-y: none;
-            /* Empêche le "rebond" sur iOS */
-
-            /* --- MODIFICATION POUR LE FOND D'ÉCRAN --- */
-            /* Remplace 'fond-ecran.jpg' par le nom de ton image */
-            background-image: linear-gradient(rgba(5, 3, 12, 0.80), rgba(5, 3, 12, 0.80)), url('Fondecran.png');
-            background-size: cover;
-            /* L'image couvre tout l'espace */
-            background-position: center center;
-            /* L'image est centrée */
-            background-repeat: no-repeat;
-            /* L'image ne se répète pas */
-            background-attachment: fixed;
-            /* L'image reste fixe au défilement */
-            margin-bottom: 8vh;
-        }
-
-        /* --- Structure générale des pages --- */
-        .page {
-            display: none;
-            flex-direction: column;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        .page.active {
-            display: flex;
-        }
-
-        .page-header {
-            padding: 2vh;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(#6f2cff29, transparent);
-            height: 6vh;
-        }
-
-        .page-header .title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            width: 100%;
-    font-family: Optima, sans-serif;
-    text-align: center;
-        }
-
-        .close-button,
-        .back-button {
-            background: none;
-            border: none;
-            color: #ffffff;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .page-content {
-            flex-grow: 1;
-            padding: 1.5vh;
-        }
-
-        /* --- Écran de chargement --- */
-        #page-loader {
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-        }
-
-        #page-loader .loader-box {
-            background: #0a5fa129;
-            padding: 30px;
-            border-radius: 20px;
-            height: 25vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid #2ed8ff;
-        }
-
-        #page-loader img {
-            width: 80px;
-            height: 80px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-
-        #page-loader .app-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            /*             font-family: Chalkduster, fantasy;
- */
-        }
-
-        #page-loader .loading-text {
-            color: var(--hint-color);
-            margin-top: 10px;
-            /*             font-family: URW Chancery L, cursive;
- */
-        }
-
-        /* --- Page d'accueil --- */
-        .top-marquee {
-            background-color: var(--tertiary-bg-color);
-            color: #2ed8ff;
-            padding: 8px 0;
-            overflow: hidden;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 15s linear infinite;
-        }
-
-        .marquee-content span {
-            display: inline-block;
-            padding-right: 200px;
-            /* Espace entre les deux phrases */
-            white-space: nowrap;
-            /* Empêche le texte de se couper */
-            font-size: 15px;
-
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(100vw);
-            }
-
-            100% {
-                transform: translateX(-100%);
-            }
-        }
-
-        #page-home .home-header {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 15px;
-            background: linear-gradient(#6f2cff85, transparent);
-            position: relative;
-            height: 11vh;
-        }
-
-        .home-logo {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            height: 14vh;
-            border-radius: 25px;
-            box-shadow: 0px 0px 10px 2px #2ed8ff;
-        }
-
-        #page-home .cart-button {
-            background: var(--tertiary-bg-color);
-            border: none;
-            border-radius: 10px;
-    width: 6vh;
-    height: 5vh;
-            color: white;
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            /* MODIFIÉ pour l'afficher */
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0px 0px 10px 2px #2ed8ff;
-        }
-
-        #quality-filter {
-            font-family: Copperplate;
-            /*             padding-left: 0px;
- */
-            height: 7vh;
-            font-size: 1.8vh;
-            /*    margin-left: 8vh;
-             border-left: 1px solid grey; */
-            width: 100%;
-            text-align: center;
-    background: linear-gradient(45deg, black, transparent);
-        }
-
-        #quality-filter option {
-            text-align: center;
-
-        }
-
-
-        .farm-card {
-            border-radius: 15px;
-            overflow: hidden;
-            cursor: pointer;
-            position: relative;
-
-        }
-
-        .farm-card img {
-            width: 95%;
-            height: 20vh;
-            ;
-            object-fit: cover;
-            border-radius: 20px;
-            margin: auto;
-            display: block;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 15px;
-            padding: 0 15px 80px 15px;
-            margin-top: 5vh;
-        }
-
-        .category-card {
-            border-radius: 15px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .category-card img {
-            width: 95%;
-            height: 25vh;
-            object-fit: cover;
-            border-radius: 20px;
-            margin: auto;
-            display: block;
-        }
-
-        .cart-button .cart-count {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #2ed8ff;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.7rem;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        /* Style des filtres */
-        #page-home .filters {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .filter-input-wrapper,
-        .filter-select-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            background: var(--secondary-bg-color);
-            border-radius: 10px;
-            margin-top: 3vh;
-            justify-content: center;
-            border-radius: 20px;
-            width: 80%;
-        }
-
-        .filter-select-wrapper::after {
-            /* Crée la flèche du select */
-            content: '▾';
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--hint-color);
-            pointer-events: none;
-        }
-
-        .filter-input-wrapper input,
-        .filter-select-wrapper select {
-            padding-top: 15px;
-            padding-bottom: 15px;
-            padding-left: 4vh;
-            padding-right: 40px;
-            border: none;
-            color: var(--text-color);
-            font-size: 1rem;
-            appearance: none;
-            -webkit-appearance: none;
-            border-radius: 0;
-            line-height: normal;
-            height: auto;
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid #2ed8ff;
-    background: linear-gradient(45deg, black, transparent);
-        }
-
-        .filter-input-wrapper input::placeholder {
-            color: var(--hint-color);
-            opacity: 1;
-        }
-
-        .filter-input-wrapper svg,
-        .filter-select-wrapper svg {
-            position: absolute;
-            left: 3vh;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--hint-color);
-            margin-right: 3.5vh;
-            z-index: 2;
-            /* <-- AJOUTE ÇA */
-        }
-
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 25px;
-            padding: 0 15px 80px 15px;
-            margin-top: 3vh;
-        }
-
-        .product-card {
-            border-radius: 15px;
-            overflow: hidden;
-            cursor: pointer;
-            position: relative;
-            border: 2px solid #2ed8ff;
-    background: linear-gradient(#8b34ffd6, #2ed8ffd1);
-        }
-
-        .card-badge {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-            /* Petite ombre */
-            color: white;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .product-flag {
-            margin-left: 5px;
-            font-size: 3vh;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #120b25db;
-            height: auto;
-            width: 35px;
-            border-radius: 20%;
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-        }
-
-        .product-card .info {
-            padding: 10px;
-        }
-
-        .product-card .name {
-            font-weight: 500;
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            height: 6vh;
-            text-align: center;
-            font-family: American Typewriter, serif	;
-            font-size: 14px;
-            margin-bottom: 2vh;
-            color: black;
-        }
-
-        .product-card .farm {
-            color: #79e8ff;
-            font-size: 0.8rem;
-            text-align: center;
-            border-bottom: 1px solid #79e8ff;
-            margin-bottom: 5px;
-        }
-
-        .product-card .price {
-            text-align: end;
-            font-family: monospace;
-            color: black;
-        }
-
-        .no-results {
-            padding: 20px;
-            text-align: center;
-            color: var(--hint-color);
-            grid-column: 1 / -1;
-            /* Prend toute la largeur */
-        }
-
-        /* Barre de navigation en bas */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            background: #120b25a1;
-            align-items: center;
-            padding: 10px 0;
-            z-index: 50;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--hint-color);
-            text-decoration: none;
-            font-size: 0.7rem;
-            background: #8080807d;
-            border-radius: 20px;
-            /* height: 5vh; */
-            width: 12vh;
-            color: #6f2cff;
-    padding: 1vh;
-    border: none;
-    box-shadow: 0px 0px 10px 2px #2ed8ff;
-    cursor: pointer;
-        }
-
-        .nav-item.active {
-            color: #2ed8ff;
-            background-color: #0000009c;
-        }
-
-        .nav-item svg {
-            margin-bottom: 5px;
-        }
-
-        /* Page Produit */
-        #page-product .product-video {
-            width: 85%;
-            display: block;
-            margin: auto;
-            aspect-ratio: 9 / 16;
-            background: #000;
-            border-radius: 20px;
-        }
-
-        #page-product .product-details {
-            padding: 15px;
-        }
-
-        .product-details .name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: cursive;
-        }
-
-        .product-details .farm {
-            color: #c56cff;
-        }
-
-        .product-details .tarifs-title {
-            margin-top: 20px;
-            font-weight: 500;
-        }
-
-        .tarif-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--secondary-bg-color);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
-        .add-to-cart-btn {
-            background: linear-gradient(black, transparent);
-            border: 1px solid #2ed8ff;
-    border-radius: 8px;
-    color: #2ed8ff;
-            width: 50%;
-            height: 5vh;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            margin-top: 1vh;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Page Panier & Confirmation */
-        .cart-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--tertiary-bg-color);
-        }
-
-        .cart-item img {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            object-fit: cover;
-        }
-
-        .cart-item .item-details {
-            flex-grow: 1;
-            background-color: #120b25d9;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            border-radius: 20px;
-            font-family: New Century Schoolbook, TeX Gyre Schola, serif;
-            padding: 1vh;
-
-        }
-
-        .cart-item .name {
-            font-weight: 500;
-            font-family: cursive;
-            margin-bottom: 1vh;
-            margin-top: 1vh;
-
-        }
-
-        .cart-item .gram {
-            font-family: New Century Schoolbook, TeX Gyre Schola, serif;
-            margin-bottom: 1vh;
-        }
-
-        .cart-item .price {
-            color: #2ed8ff;
-            font-weight: 700;
-            margin-bottom: 1vh;
-        }
-
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-            background: var(--tertiary-bg-color);
-            border-radius: 8px;
-        }
-
-        .quantity-selector button {
-            background: none;
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .quantity-selector .quantity {
-            padding: 0 10px;
-        }
-
-        .cart-summary {
-            background: #2ed8ffb5;
-            color: #000000;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-family: New Century Schoolbook, TeX Gyre Schola, serif;
-            text-align: center;
-
-        }
-
-
-        #page-confirmation .cart-total {
-            background: var(--secondary-bg-color);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            font-family: Optima, sans-serif;
-        }
-
-        #page-cart .cart-total {
-            background: var(--secondary-bg-color);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            font-family: Optima, sans-serif;
-        }
-
-        .cart-actions {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 8vh;
-        }
-
-        .main-action-btn {
-            background: #2ed8ffcc;
-            color: #000;
-            padding: 15px;
-            border-radius: 10px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .secondary-action-btn {
-            background: var(--secondary-bg-color);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .main-action-btn:disabled,
-        .secondary-action-btn:disabled {
-            background: var(--tertiary-bg-color);
-            /* Un gris foncé */
-            color: var(--hint-color);
-            opacity: 0.6;
-            cursor: not-allowed;
-            /* Change le curseur pour montrer qu'il est bloqué */
-        }
-
-
-        #page-product .product-details {
-            background: rgba(44, 44, 46, 0.85) !important;
-            /* Fond semi-transparent */
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border-radius: 20px !important;
-            padding: 20px !important;
-            margin-top: 20px !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #page-product .product-details-card .name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        #page-product .product-details-card .farm {
-            font-size: 1rem;
-            color: var(--hint-color);
-            margin-bottom: 25px;
-        }
-
-        #page-product .product-details-card .tarifs-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-            border-top: 1px solid var(--tertiary-bg-color);
-            padding-top: 20px;
-        }
-
-/* --- STYLE LISTE SOUS-CATÉGORIES (Style Pistachio) --- */
-.farm-list-btn {
-    background: linear-gradient(145deg, #120b25, #05030c);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    min-height: 70px;
-}
-
-.farm-list-btn:active {
-    transform: scale(0.98);
-    background: #21103f;
-}
-
-.farm-btn-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.farm-btn-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.farm-btn-title {
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.farm-btn-subtitle {
-    color: #e605c0; /* Rose Punch68 */
-    font-size: 0.85rem;
-    margin-top: 3px;
-    display: none;
-}
-
-.farm-btn-right svg {
-    stroke: #888;
-}
-
-        /* --- AJOUTE CE STYLE POUR LA DESCRIPTION --- */
-.product-description {
-    font-size: 0.95rem;
-    color: #ffffff; /* Ajusté pour la lisibilité */
-    margin-top: 15px;
-    margin-bottom: 20px;
-    line-height: 1.4;
-    border-top: 1px solid var(--tertiary-bg-color);
-    padding-top: 20px;
-    white-space: pre-wrap; /* INDISPENSABLE : Active les retours à la ligne */
-    text-align: center;     /* Mieux pour les listes d'arômes */
-    font-family: "Georgia", serif;
-}
-
-        /* On retire le fond des items de tarif car la carte s'en charge */
-        .tarif-item {
-            padding: 10px 0;
-            display: flex;
-            justify-content: center;
-            border-radius: 20px;
-            background: linear-gradient(#8b34ffbf, #2ed8ff99);
-    border: 2px solid #2ed8ff;
-            width: 90%;
-            height: 4vh;
-        }
-
-        /* --- NOUVEAU STYLE POUR LA NOTIFICATION --- */
-        #notification-toast {
-            visibility: hidden;
-            /* Caché par défaut */
-            min-width: 250px;
-            background-color: #2ed8ffb8;
-            color: #fff;
-            text-align: center;
-            border-radius: 10px;
-            padding: 16px;
-            position: fixed;
-            z-index: 101;
-            /* Au-dessus de tout */
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 30px;
-            font-size: 1rem;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: visibility 0.5s, opacity 0.5s, transform 0.5s;
-        }
-
-        #notification-toast.show {
-            visibility: visible;
-            animation: fadein 0.5s, fadeout 0.5s 2.5s;
-        }
-
-        @keyframes fadein {
-            from {
-                bottom: 0;
-                opacity: 0;
-            }
-
-            to {
-                bottom: 30px;
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeout {
-            from {
-                bottom: 30px;
-                opacity: 1;
-            }
-
-            to {
-                bottom: 0;
-                opacity: 0;
-            }
-        }
-
-
-        .instagram-button {
-            background: linear-gradient(45deg, #c56cff 0%, #8b34ff 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-        }
-
-
-
-        .box-tarif {
-            display: flex;
-            font-size: 30px;
-            justify-content: space-around;
-            width: 90%;
-            font-family: Impact, fantasy;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .box-tarif .tarif-wieght {
-            border-bottom: 1px solid black;
-            color: black;
-            width: 80%;
-            text-align: center;
-            /* margin-bottom: 1vh; */
-            height: 3.5vh;
-            padding: 1vh;
-        }
-
-        .box-tarif .tarif-price {
-            border-bottom: 1px solid black;
-            color: black;
-            width: 80%;
-            text-align: center;
-            /* margin-bottom: 1vh; */
-            height: 3.5vh;
-            margin-top: 1vh;
-            padding: 1vh;
-        }
-
-
-        /* --- NOUVEAU STYLE POUR LA PAGE INFO --- */
-        #page-info .page-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 1vh;
-        }
-
-        #page-info .contact-logo {
-            position: unset;
-            height: 14vh;
-            border-radius: 25px;
-            margin-bottom: 9vh;
-            box-shadow: 0px 0px 10px 2px #2ed8ff;
-}
-
-        #page-info .contact-card {
-            background: rgba(44, 44, 46, 0.8);
-            /* Fond semi-transparent */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            box-sizing: border-box;
-            margin-top: 2vh;
-
-        }
-
-
-
-
-        /* --- NOUVEAU STYLE POUR LA PAGE CONTACT --- */
-        #page-contact .page-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 1vh;
-        }
-
-        #page-contact .contact-logo {
-            width: 100px;
-            height: 15vh;
-            width: 15vh;
-            margin-bottom: 6vh;
-            border-radius: 25%;
-            box-shadow: 0px 0px 10px 2px #2ed8ff;
-            margin-top: 2vh;
-        }
-
-        #page-contact .contact-card {
-            background: rgba(44, 44, 46, 0.8);
-            /* Fond semi-transparent */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            box-sizing: border-box;
-            margin-top: 5vh;
-
-        }
-
-        .contact-links-list a {
-            align-items: center;
-            padding: 15px;
-            background: var(--tertiary-bg-color);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            text-decoration: none;
-            color: var(--text-color);
-            transition: background-color 0.2s ease;
-            height: 5vh;
-            display: flex;
-            justify-content: center;
-            font-size: 3vh;
-        }
-
-        .contact-links-list a:last-child {
-            margin-bottom: 0;
-        }
-
-        .contact-links-list a:hover {
-            background-color: #4a4a4c;
-        }
-
-
-       /* --- COULEURS ET DÉGRADÉS RÉSEAUX --- */
-.contact-link.potato { background: linear-gradient(45deg, #7d1a03 0%, #f16101 100%); }
-.contact-link.instagram { background: linear-gradient(45deg, #c56cff 0%, #8b34ff 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
-.contact-link.signal { background: linear-gradient(45deg, #005ce6 0%, #29b6f6 100%); }
-.contact-link.luffa { background: linear-gradient(45deg, #5633f0 0%, #a43ce6 100%); }
-.contact-link.snapchat { background: linear-gradient(45deg, #fffc00 0%, #6f5900 100%); color: #000 !important; }
-.contact-link.whatsapp { background: linear-gradient(45deg, #25d366 0%, #128c7e 100%); }
-.contact-link.linktree { background: linear-gradient(45deg, #39e09b 0%, #6eff00 100%); }
-.contact-link.gemspace { background: linear-gradient(45deg, #00c6ff 0%, #0072ff 100%); }
-.contact-link.telegram-canal { 
-    background: linear-gradient(45deg, #0088cc 0%, #24a1de 100%); 
-    color: white !important; 
-    font-weight: 900;
-}
-
-/* Ajustement global des liens pour la lisibilité */
-.contact-links-list a {
-    font-weight: 800;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 12px;
-}
-        /* --- NOUVEAU STYLE POUR L'ACCORDÉON --- */
-        .accordion-container {
-            width: 100%;
-            text-align: center;
-
-        }
-
-        .accordion-item {
-            background: var(--secondary-bg-color);
-            border-radius: 15px;
-            margin-bottom: 10px;
-            overflow: hidden;
-            border: 1px solid var(--tertiary-bg-color);
-        }
-
-        .accordion-header {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            background: var(--secondary-bg-color);
-            border: none;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-color);
-            cursor: pointer;
-            text-align: left;
-            height: 11vh;
-        }
-
-        .accordion-header .accordion-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 20%;
-            margin-right: 15px;
-            border: 1px solid red;
-            box-shadow: 0px 0px 5px 2px red;
-        }
-
-        .accordion-header span {
-            flex-grow: 1;
-            text-align: center;
-            /* Pousse la flèche à droite */
-        }
-
-        .accordion-header .accordion-arrow {
-            transition: transform 0.3s ease;
-        }
-
-        .accordion-item.active .accordion-arrow {
-            transform: rotate(180deg);
-        }
-
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-            background: var(--tertiary-bg-color);
-        }
-
-        .accordion-content p {
-            padding: 15px;
-            margin: 0;
-            color: var(--hint-color);
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .accordion-item.active .accordion-content {
-            max-height: 500px;
-            /* Hauteur max pour l'animation */
-            padding-top: 0;
-        }
-
-        /* Style pour la ligne de séparation */
-        .contact-divider {
-            border: none;
-            border-top: 1px solid var(--tertiary-bg-color);
-            margin: 0 0 20px 0;
-            /* Espace avant les liens */
-        }
-
-        /* --- NOUVEAUX STYLES (Confirmation) --- */
-        .promo-container,
-        .payment-selector {
-            margin-top: 20px;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--tertiary-bg-color);
-            display: none;
-        }
-
-        #promo-input-container {
-            display: flex;
-            gap: 10px;
-        }
-
-        #promo-code-input {
-            flex-grow: 1;
-            padding: 15px;
-            border: none;
-            background: var(--secondary-bg-color);
-            border-radius: 10px;
-            color: var(--text-color);
-            font-size: 1rem;
-        }
-
-        #apply-promo-btn {
-            padding: 15px;
-            /* S'assurer qu'il a la même hauteur */
-            flex-shrink: 0;
-            /* Empêche le bouton de rétrécir */
-        }
-
-        #promo-applied-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--tertiary-bg-color);
-            padding: 15px;
-            border-radius: 10px;
-            color: var(--green-color);
-            font-weight: 500;
-        }
-
-        #promo-applied-container span {
-            margin-right: 10px;
-        }
-
-        #remove-promo-btn {
-            background: none;
-            border: none;
-            color: var(--red-color);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0;
-            flex-shrink: 0;
-        }
-
-        .payment-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .payment-btn {
-            background: var(--secondary-bg-color);
-            color: var(--hint-color);
-            border: 2px solid var(--secondary-bg-color);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .payment-btn.active {
-            color: var(--text-color);
-            border-color: #489fc9;
-            /* Ta couleur accent */
-            background-color: var(--tertiary-bg-color);
-        }
-
-
-        /* --- FORMULAIRE COMMANDE TELEGRAM --- */
-        .order-delivery-form {
-            margin-top: 20px;
-            padding: 16px;
-            background: rgba(18, 11, 37, 0.88);
-            border: 1px solid rgba(46, 216, 255, 0.45);
-            border-radius: 16px;
-            box-shadow: 0 0 18px rgba(139, 61, 255, 0.16);
-        }
-
-        .order-delivery-form h4 {
-            margin: 0 0 12px 0;
-            text-align: center;
-            color: #dff8ff;
-        }
-
-        .delivery-mode-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .delivery-mode-btn {
-            padding: 13px 8px;
-            border-radius: 12px;
-            border: 1px solid #41325f;
-            background: #120b25;
-            color: #aaa8c7;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .delivery-mode-btn.active {
-            color: white;
-            border-color: #2ed8ff;
-            background: linear-gradient(135deg, rgba(117, 44, 255, .8), rgba(17, 168, 255, .65));
-            box-shadow: 0 0 12px rgba(46, 216, 255, .25);
-        }
-
-        .order-field {
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 10px;
-            padding: 13px 14px;
-            border: 1px solid #41325f;
-            border-radius: 12px;
-            background: #090511;
-            color: #f5f7ff;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .order-field:focus {
-            border-color: #2ed8ff;
-            box-shadow: 0 0 0 2px rgba(46, 216, 255, .12);
-        }
-
-        textarea.order-field {
-            min-height: 90px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .order-form-note {
-            color: #aaa8c7;
-            font-size: .8rem;
-            text-align: center;
-            margin-top: 10px;
-            line-height: 1.35;
-        }
-
-        /* Style pour le nouveau résumé du panier */
-        /*  #confirmation-summary .summary-line {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1rem;
-            padding: 5px 0;
-        } */
-        #confirmation-summary .summary-line.total {
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-top: 1px solid var(--tertiary-bg-color);
-            margin-top: 10px;
-            padding-top: 10px;
-            width: 80%;
-            text-align: center;
-        }
-
-        #confirmation-summary .summary-line.discount {
-            color: var(--green-color);
-        }
-
-        .farm-card.unclickable {
-            opacity: 0.8;
-        }
-
-        .product-item-card.unclickable img {
-            opacity: 0.7;
-        }
-
-
-        /* --- NOUVEAU STYLE POUR LA GRILLE DES TARIFS --- */
-
-        .tarifs-grid-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            width: 90%;
-        }
-
-        /* On force les .tarif-item à s'adapter à la grille */
-        #page-product .tarifs-grid-container .tarif-item {
-            /* On veut 2 par ligne, avec 10px de gap.
-       (100% - 10px) / 2 = 50% - 5px */
-            width: calc(50% - 5px);
-            margin-top: 0;
-            box-sizing: border-box;
-            height: 20vh;
-            min-height: 4vh;
-            padding: 10px 5px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* On ajuste la police si ça déborde sur mobile */
-        #page-product .tarifs-grid-container .box-tarif {
-            font-size: 22px;
-            /* Un peu plus petit pour que ça rentre */
-            /* Le reste (width: 80%, etc.) est ok */
-        }
-
-        #page-product .tarifs-grid-container .add-to-cart-btn {
-            /* On s'assure que le bouton 'panier' ne prend pas trop de place */
-            flex-shrink: 0;
-        }
-
-        .filter-select-wrapper:has(#quality-filter) {
-            /* C'est ici que tu mets le style de ton image */
-            position: relative;
-            display: flex;
-            align-items: center;
-            background: var(--secondary-bg-color);
-            margin-top: 3vh;
-            justify-content: center;
-
-            /* Les lignes de ton image : */
-            border-radius: 20px;
-            width: 100%;
-        }
-
-        .contact-link.signal {
-    background-color: #0400ff; /* Vert Signal */
-    color: #ffffff; 
-}
-/* --- STYLE DES CATÉGORIES (BOUTONS) --- */
-
-/* 1. La forme du bouton (Base) */
-.category-card-styled {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100px; /* Hauteur uniforme */
-    width: 100%;
-    border-radius: 16px;
-    margin-bottom: 15px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden; /* Pour que le dégradé ne dépasse pas */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Légère bordure subtile */
-}
-
-/* Effet au clic */
-.category-card-styled:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* 2. Le texte à l'intérieur */
-.category-name-text {
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4); /* Ombre portée pour lisibilité */
-    font-family: 'Arial Black', sans-serif;
-    z-index: 2; /* Pour être au-dessus du fond */
-    pointer-events: none; /* Le clic passe au travers */
-}
-
-/* 3. Dégradés Spécifiques (Palette Logo) */
-
-/* HASH : Orange Solaire vers Jaune */
-.cat-gradient-hash {
-    background: linear-gradient(135deg, #FF8C00 0%, #F1C40F 100%);
-}
-
-/* WEED : Vert Profond vers Vert Menthe */
-.cat-gradient-weed {
-    background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
-}
-
-/* EXTRACT : Or vers Jaune Pâle */
-.cat-gradient-extract {
-    background: linear-gradient(135deg, #d4af37 0%, #f7e987 100%);
-}
-
-/* EDIBLES : Violet Punch vers Rose */
-.cat-gradient-edibles {
-    background: linear-gradient(135deg, #8E44AD 0%, #D946EF 100%);
-}
-
-/* 4. Optionnel : Petit effet de brillance "Glossy" */
-.category-card-styled::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 60%);
-    pointer-events: none;
-    transform: rotate(30deg);
-}
-
-
-        /* --- MISTER FREEZE 74 : finition néon violet / bleu glacier --- */
-        .home-logo,
-        #page-info .contact-logo,
-        #page-contact .contact-logo {
-            box-shadow: 0 0 12px 2px #2ed8ff, 0 0 28px rgba(139, 52, 255, 0.55);
-        }
-
-        .product-card {
-            border-color: #2ed8ff;
-            background: linear-gradient(145deg, rgba(139, 52, 255, 0.88), rgba(46, 216, 255, 0.76));
-            box-shadow: 0 0 16px rgba(46, 216, 255, 0.18);
-        }
-
-        .farm-list-btn {
-            background: linear-gradient(145deg, rgba(33, 16, 63, 0.96), rgba(5, 3, 12, 0.96));
-            border: 1px solid rgba(46, 216, 255, 0.28);
-        }
-
-        .main-action-btn,
-        .telegram-button {
-            background: linear-gradient(90deg, #7a2cff, #2ed8ff);
-            color: #ffffff;
-            box-shadow: 0 0 14px rgba(46, 216, 255, 0.28);
-        }
-
-        .add-to-cart-btn {
-            border-color: #2ed8ff;
-            color: #79e8ff;
-            box-shadow: inset 0 0 12px rgba(139, 52, 255, 0.14);
-        }
-
-        .contact-link.telegram-contact {
-            background: linear-gradient(90deg, #7a2cff 0%, #2ed8ff 100%);
-            color: #ffffff !important;
-            box-shadow: 0 0 18px rgba(46, 216, 255, 0.28);
-        }
-
-        .bottom-nav {
-            background: rgba(11, 5, 27, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(46, 216, 255, 0.15);
-        }
-
-        .nav-item {
-            color: #d9dcff;
-            box-shadow: 0 0 10px 1px rgba(46, 216, 255, 0.65);
-        }
-
-        .nav-item.active {
-            color: #79e8ff;
-            background: rgba(83, 27, 150, 0.42);
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>MISTER FREEZE 74&🇨🇭</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg:#07040c;
+      --bg2:#0d0714;
+      --card:#11091a;
+      --card2:#160b22;
+      --line:#2b1640;
+      --text:#fbf8ff;
+      --muted:#a79daf;
+      --purple:#9f20ff;
+      --violet:#6f00ff;
+      --pink:#d530ff;
+      --cyan:#35d8ff;
+      --green:#39d98a;
+      --red:#ff5a6f;
+      --shadow:0 18px 50px rgba(0,0,0,.42);
+      --radius:24px;
+      --bottom:84px;
+    }
+    *{box-sizing:border-box}
+    html{background:#000}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 80% 0%, rgba(123,0,255,.18), transparent 28%),
+        radial-gradient(circle at 10% 22%, rgba(213,48,255,.08), transparent 34%),
+        linear-gradient(180deg,#07040c 0%,#090510 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",sans-serif;
+      min-height:100vh;
+      padding-bottom:calc(var(--bottom) + env(safe-area-inset-bottom));
+      overflow-x:hidden;
+    }
+    button,input,textarea,select{font:inherit}
+    button{color:inherit}
+    img{display:block;max-width:100%}
+    .app-shell{max-width:760px;margin:0 auto;min-height:100vh}
+    .shop-header{
+      position:sticky;top:0;z-index:40;
+      display:grid;grid-template-columns:58px 1fr 58px;
+      align-items:center;gap:12px;padding:14px 16px;
+      background:rgba(10,5,16,.93);backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(159,32,255,.13)
+    }
+    .icon-square{
+      width:54px;height:54px;border-radius:17px;border:1px solid #2d173f;
+      background:linear-gradient(145deg,#171020,#0b0710);
+      display:grid;place-items:center;font-size:23px;cursor:pointer;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.015)
+    }
+    .brand-inline{display:flex;align-items:center;gap:11px;min-width:0}
+    .brand-inline img{width:50px;height:50px;object-fit:cover;border-radius:14px;border:1px solid #4b2568}
+    .brand-text{min-width:0}
+    .brand-text strong{display:block;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand-text small{display:block;color:var(--muted);margin-top:2px}
+    .cart-icon{position:relative}
+    .cart-count{
+      position:absolute;right:-4px;top:-6px;min-width:23px;height:23px;padding:0 6px;border-radius:999px;
+      display:grid;place-items:center;background:linear-gradient(135deg,var(--violet),var(--pink));
+      font-size:12px;font-weight:800;box-shadow:0 0 18px rgba(159,32,255,.55)
+    }
+    .cart-count.is-empty{opacity:.7}
+
+    .app-page{display:none;padding:18px 16px 28px}
+    .app-page.active{display:block}
+    .eyebrow{font-size:12px;letter-spacing:.27em;font-weight:900;color:#d777ff;text-transform:uppercase}
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:40px;line-height:.98;letter-spacing:-.04em}
+    h2{font-size:31px;letter-spacing:-.03em}
+    .muted{color:var(--muted)}
+
+    .hero{
+      position:relative;overflow:hidden;border:1px solid #32184a;border-radius:30px;
+      padding:28px 22px 22px;background:
+      radial-gradient(circle at 50% 0%,rgba(144,23,255,.28),transparent 32%),
+      linear-gradient(180deg,#18092c 0%,#100817 55%,#0d0712 100%);
+      box-shadow:var(--shadow);
+    }
+    .hero:after{
+      content:"";position:absolute;inset:auto -20% -38% -20%;height:220px;
+      background:radial-gradient(ellipse,rgba(136,0,255,.22),transparent 65%);pointer-events:none
+    }
+    .hero-logo{
+      width:112px;height:112px;border-radius:30px;object-fit:cover;margin:0 auto 23px;
+      border:2px solid #8032d8;box-shadow:0 0 36px rgba(112,0,255,.42)
+    }
+    .hero-copy{text-align:center;position:relative;z-index:1}
+    .hero-copy h1{font-size:42px;margin:10px 0 18px}
+    .gradient-text{
+      background:linear-gradient(90deg,#fff 0%,#fff 35%,#d547ff 58%,#8c1dff 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent
+    }
+    .hero-copy p{font-size:17px;line-height:1.55;color:#b9b0c0}
+    .mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+    .mode-card{
+      border:1px solid #331c44;background:rgba(18,11,25,.92);border-radius:22px;padding:18px 12px;
+      min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+      cursor:pointer
+    }
+    .mode-card span{font-size:29px}.mode-card strong{font-size:18px}.mode-card small{color:#91869b}
+    .gradient-btn{
+      width:100%;border:0;border-radius:18px;padding:16px 18px;font-weight:900;font-size:18px;cursor:pointer;
+      background:linear-gradient(90deg,#6d00ff 0%,#9f20ff 55%,#c626ff 100%);
+      box-shadow:0 8px 30px rgba(122,0,255,.30)
+    }
+    .gradient-btn.small{font-size:13px;padding:11px 12px;border-radius:12px}
+    .section-block{margin-top:30px}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:14px}
+    .section-head h2{font-size:28px;margin:4px 0 0}
+    .text-btn{background:none;border:0;color:#dc64ff;font-weight:700;cursor:pointer}
+
+    .horizontal-products{display:flex;gap:13px;overflow-x:auto;padding:2px 1px 10px;scroll-snap-type:x mandatory}
+    .horizontal-products .product-card-v2{min-width:210px;max-width:210px;scroll-snap-align:start}
+    .category-grid-v2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .category-tile{
+      min-height:132px;text-align:left;border:1px solid #2d173d;border-radius:22px;padding:18px;
+      background:linear-gradient(145deg,#16101d,#100915);cursor:pointer
+    }
+    .category-emoji{display:block;font-size:30px;margin-bottom:18px}
+    .category-tile strong{display:block;font-size:19px}
+    .category-tile small{display:block;color:var(--muted);margin-top:7px}
+
+    .catalog-title{margin:9px 0 18px}
+    .search-box{position:relative;margin-bottom:14px}
+    .search-box input{
+      width:100%;height:55px;border-radius:18px;border:1px solid #2c1938;background:#110b17;color:#fff;
+      padding:0 16px 0 48px;outline:none
+    }
+    .search-box span{position:absolute;left:17px;top:15px;color:#93879b;font-size:20px}
+    .filter-chips{display:flex;gap:9px;overflow-x:auto;padding:0 0 13px}
+    .filter-chip{
+      flex:0 0 auto;border:1px solid #2d1b38;background:#120b19;color:#a99faf;border-radius:999px;
+      padding:10px 17px;font-weight:800;cursor:pointer
+    }
+    .filter-chip.active{background:linear-gradient(135deg,#7223ff,#c222ff);color:#fff;border-color:transparent}
+    .catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    .product-card-v2{
+      overflow:hidden;border:1px solid #2f1641;border-radius:20px;background:#100717;box-shadow:0 10px 30px rgba(0,0,0,.22)
+    }
+    .product-image-wrap{position:relative;width:100%;padding:0;border:0;background:#09050c;cursor:pointer}
+    .product-image-wrap img{width:100%;aspect-ratio:1/1;object-fit:cover}
+    .format-pill{
+      position:absolute;left:10px;bottom:9px;background:rgba(57,5,83,.88);border:1px solid rgba(214,73,255,.2);
+      padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800;color:#e48cff
+    }
+    .product-card-body{padding:12px}
+    .product-card-body strong{display:block;font-size:15px;line-height:1.2;min-height:36px}
+    .product-card-body small{display:block;color:#8f8495;margin:5px 0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .product-price-line{display:flex;justify-content:space-between;align-items:center;gap:7px;color:#d24fff;font-weight:900;font-size:13px;margin-bottom:11px}
+    .age-badge{color:#8d8292;font-size:11px}
+
+    .panel-card{
+      border:1px solid #2d163e;background:linear-gradient(180deg,#100716,#0c0710);
+      border-radius:28px;padding:22px;box-shadow:var(--shadow)
+    }
+    .panel-title{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+    .close-panel{border:1px solid #342043;background:#16101d;width:50px;height:50px;border-radius:17px;font-size:28px;cursor:pointer}
+    .vip-medal{font-size:42px;margin:9px 0}
+    .vip-level{font-size:31px;font-weight:900;margin:18px 0}
+    .vip-stat{font-size:18px;line-height:1.45}
+    .progress-shell{height:10px;border-radius:999px;background:#24142f;overflow:hidden;margin:20px 0}
+    .progress-shell span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6f00ff,#d426ff);border-radius:inherit}
+    .vip-copy{font-size:17px;line-height:1.55;color:#a69ba9}
+
+    .cart-title{margin-bottom:14px}
+    .cart-item-v2{
+      display:grid;grid-template-columns:70px 1fr auto;gap:11px;align-items:center;
+      border:1px solid #2c173a;background:#110a17;border-radius:19px;padding:10px;margin-bottom:10px
+    }
+    .cart-item-v2 img{width:70px;height:70px;border-radius:14px;object-fit:cover}
+    .cart-item-main strong,.cart-item-main small,.cart-item-main span{display:block}
+    .cart-item-main small{color:#91879a;margin:5px 0}.cart-item-main span{font-weight:900;color:#cf4cff}
+    .qty-control{display:flex;flex-direction:column;align-items:center;gap:5px}
+    .qty-control button{width:29px;height:29px;border:1px solid #382044;background:#1a0f22;border-radius:9px;cursor:pointer}
+    .cart-empty-copy{color:#938898;padding:30px 0 50px}
+    .subtotal-card{
+      margin:18px 0 26px;border:1px solid #3c1856;background:linear-gradient(145deg,#1a0c27,#110817);
+      border-radius:22px;padding:18px
+    }
+    .subtotal-line{display:flex;justify-content:space-between;align-items:center;font-size:25px}
+    .subtotal-line b{font-size:28px}
+    .subtotal-card p{color:#a59aa8;margin:9px 0 0;line-height:1.45}
+    .identity-line{font-size:15px;color:#c2b7c7;margin:10px 0 20px}
+    .field-group{margin-bottom:15px}
+    .field-group label{display:block;color:#aea3b1;margin-bottom:8px;font-size:14px}
+    .field-group input,.field-group textarea,.field-group select{
+      width:100%;border:1px solid #2e1939;background:#110b16;color:#fff;border-radius:17px;
+      padding:15px 16px;outline:none
+    }
+    .field-group textarea{min-height:100px;resize:vertical}
+    .mode-note{
+      border:1px solid #3a1358;background:#100817;color:#a99dad;border-radius:17px;padding:14px;margin:0 0 16px;line-height:1.45
+    }
+    .payment-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+    .payment-row button{border:1px solid #321d40;background:#130c19;padding:13px;border-radius:14px;cursor:pointer}
+    .payment-row button.active{border-color:#9f20ff;background:#241037}
+
+    .order-card{
+      border:1px solid #2d173d;background:#100817;border-radius:22px;padding:16px;margin-bottom:12px
+    }
+    .order-card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .order-card-top strong{display:block;margin-top:5px}
+    .status-pill{font-size:12px;border-radius:999px;padding:8px 10px;background:#261532;white-space:nowrap}
+    .status-done{background:rgba(57,217,138,.14);color:#80f2bb}
+    .status-cancelled{background:rgba(255,90,111,.12);color:#ff9aaa}
+    .order-meta{display:flex;gap:12px;flex-wrap:wrap;margin:15px 0 8px;color:#9e92a4;font-size:13px}
+    .order-meta b{color:#dd67ff}
+    .order-products{display:flex;flex-direction:column;gap:5px;color:#c9becd;font-size:13px}
+    .empty-state{grid-column:1/-1;text-align:center;color:#928797;border:1px dashed #342042;border-radius:22px;padding:34px 20px}
+    .empty-state span{display:block;font-size:34px;margin-bottom:10px}.empty-state strong{display:block;color:#fff;font-size:18px}.empty-state p{margin:8px 0 0}
+    .empty-state.big{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .empty-inline{min-width:100%;border:1px dashed #321a40;padding:22px;border-radius:20px;color:#94899a}
+
+    .bottom-nav-v2{
+      position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:60;
+      width:min(760px,100%);display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+      padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+      background:rgba(10,5,14,.96);backdrop-filter:blur(20px);border-top:1px solid #261331
+    }
+    .bottom-nav-v2 button{border:0;background:none;color:#786e7d;padding:5px 2px;cursor:pointer}
+    .bottom-nav-v2 button span{display:block;font-size:22px;height:26px}
+    .bottom-nav-v2 button small{display:block;font-size:10px;font-weight:800;margin-top:2px}
+    .bottom-nav-v2 button.active{color:#c642ff}
+    .bottom-nav-v2 .vip-nav span{font-size:29px;transform:translateY(-3px)}
+
+    .drawer-backdrop{position:fixed;inset:0;z-index:79;background:rgba(0,0,0,.62);opacity:0;pointer-events:none;transition:.2s}
+    .drawer-backdrop.open{opacity:1;pointer-events:auto}
+    .side-drawer{
+      position:fixed;left:0;top:0;bottom:0;z-index:80;width:min(340px,86vw);padding:20px;
+      background:#0c0711;border-right:1px solid #351848;transform:translateX(-102%);transition:.25s ease;
+      box-shadow:25px 0 70px rgba(0,0,0,.45)
+    }
+    .side-drawer.open{transform:translateX(0)}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .drawer-brand{display:flex;gap:11px;align-items:center}.drawer-brand img{width:52px;height:52px;border-radius:15px}
+    .drawer-links{display:flex;flex-direction:column;gap:10px}
+    .drawer-links button,.drawer-links a{
+      border:1px solid #2d173b;background:#130b18;color:#fff;border-radius:16px;padding:15px;text-align:left;text-decoration:none;cursor:pointer
+    }
+
+    .modal{
+      position:fixed;inset:0;z-index:90;background:rgba(5,2,8,.82);backdrop-filter:blur(10px);
+      padding:18px;display:none;overflow-y:auto
+    }
+    .modal.open{display:block}
+    .modal-card{max-width:700px;margin:18px auto 100px;border:1px solid #36184b;background:#0d0712;border-radius:28px;padding:18px}
+    .modal-top{display:flex;justify-content:flex-end}.modal-top button{width:48px;height:48px;border-radius:16px;border:1px solid #382044;background:#17101d;font-size:25px}
+    .product-detail-visual img,.product-detail-visual video{width:100%;max-height:440px;object-fit:cover;border-radius:22px;margin:8px 0 20px;background:#000}
+    .product-description-v2{white-space:pre-wrap;color:#b8adb9;line-height:1.55}
+    .price-row-v2{
+      display:flex;justify-content:space-between;align-items:center;border:1px solid #321b3f;background:#130b19;border-radius:16px;
+      padding:13px 14px;margin-top:9px
+    }
+    .price-row-v2 div strong,.price-row-v2 div span{display:block}.price-row-v2 div span{color:#d863ff;margin-top:4px;font-weight:800}
+    .add-cart-round{width:42px;height:42px;border-radius:50%;border:0;background:linear-gradient(135deg,#7223ff,#cf27ff);font-size:24px;cursor:pointer}
+
+    #toast{
+      position:fixed;left:50%;bottom:105px;z-index:120;transform:translate(-50%,18px);
+      background:#1a1022;border:1px solid #4b2362;color:#fff;border-radius:14px;padding:12px 16px;
+      opacity:0;pointer-events:none;transition:.2s;box-shadow:var(--shadow);max-width:88vw;text-align:center
+    }
+    #toast.show{opacity:1;transform:translate(-50%,0)}
+    @media (min-width:600px){
+      .catalog-grid{grid-template-columns:repeat(3,1fr)}
+      .category-grid-v2{grid-template-columns:repeat(3,1fr)}
+    }
+  </style>
 </head>
-
 <body>
-    <div id="page-contact" class="page">
-        <div class="page-content">
-            <img src="Logo.jpg" alt="Logo" class="contact-logo">
-            <div class="contact-card">
-
-                <div id="contact-links-container" class="contact-links-list">
-                </div>
-
-            </div>
-        </div>
+<div class="app-shell">
+  <header class="shop-header">
+    <button class="icon-square" id="open-menu">☰</button>
+    <div class="brand-inline">
+      <img src="Logo.jpg" alt="Mister Freeze 74">
+      <div class="brand-text">
+        <strong>MISTER FREEZE 74</strong>
+        <small id="shop-user-subtitle">Coffee Shop • 18+</small>
+      </div>
     </div>
+    <button class="icon-square cart-icon" data-tab="cart">🛒<span class="cart-count is-empty" data-cart-count>0</span></button>
+  </header>
 
-    <div id="page-info" class="page">
-        <div class="page-content" style="text-align: center; padding: 20px; font-family: 'Roboto', sans-serif;">
-            <img src="Logo.jpg" alt="Logo" class="contact-logo" >
-            
-            <div class="info-text-container" style="background: rgba(18, 11, 37, 0.90); border-radius: 20px; padding: 20px; border: 1px solid #2ed8ff; line-height: 1.6;">
-                <h2 style="color: #2ed8ff; margin-bottom: 15px;">BIENVENUE 👋</h2>
-                <p><strong>MISTER FREEZE 74&🇨🇭 </strong></p>
-                <p style="color:#f5f7ff;">Nouvelle identité, nouveau menu.</p>
-                <p style="font-size:0.9rem; color:#aaa8c7;">Contact commande : <strong>@MISTERFREEZE74</strong></p>
-            </div>
+  <main>
+    <section id="page-home" class="app-page active">
+      <div class="hero">
+        <img class="hero-logo" src="Logo.jpg" alt="Logo">
+        <div class="hero-copy">
+          <div class="eyebrow">MISTER FREEZE 74 • SUISSE 🇨🇭</div>
+          <h1><span class="gradient-text">La qualité,<br>notre priorité.</span></h1>
+          <p>Découvre notre sélection et accède au catalogue directement depuis Telegram.</p>
+          <div class="mode-cards">
+            <button class="mode-card" data-hero-mode="Retrait sur place"><span>📍</span><strong>Retrait</strong><small>Adresse envoyée en privé</small></button>
+            <button class="mode-card" data-hero-mode="Livraison"><span>🚚</span><strong>Livraison</strong><small>Selon votre secteur</small></button>
+          </div>
+          <button id="hero-catalog-btn" class="gradient-btn">Voir le catalogue</button>
         </div>
-    </div>
+      </div>
 
-    <svg width="0" height="0" style="position:absolute">
-        <defs>
-            <symbol id="icon-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">	
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 13a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"></path>	
-                <path d="M14 12L10 12"></path>	
-                </symbol>
+      <div class="section-block">
+        <div class="section-head"><div><div class="eyebrow">Sélection</div><h2>Produits populaires</h2></div><button class="text-btn" data-tab="catalog">Tout voir</button></div>
+        <div id="popular-products" class="horizontal-products"></div>
+      </div>
 
-            <symbol id="icon-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-            </symbol>
-            <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </symbol>
-            <symbol id="icon-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </symbol>
-            <symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </symbol>
-            <symbol id="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </symbol>
-            <symbol id="icon-contact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                </path>
-            </symbol>
-            <symbol id="icon-quality" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <polygon
-                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                </polygon>
-            </symbol>
-            <symbol id="icon-farm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.5 9.5L9.5 4.5l-5 5L1 11l4.5 4.5 5-5 4.5-4.5z"></path>
-                <path d="M19.5 14.5L14.5 9.5l-5 5L1 21h8l4.5-4.5 5-5 4.5-4.5z"></path>
-            </symbol>
-            <symbol id="icon-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-            </symbol>
-            <symbol id="icon-telegram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 2 L11 13 L2 9 L22 2 Z M22 2 L15 22 L11 13 L2 9 L22 2 Z"></path>
-            </symbol>
-            <symbol id="icon-whatsapp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
-                </path>
-            </symbol>
-            <symbol id="icon-snapchat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M12 1.5C6.2 1.5 1.5 6.2 1.5 12c0 5.8 4.7 10.5 10.5 10.5S22.5 17.8 22.5 12c0-5.8-4.7-10.5-10.5-10.5zm-2.3 12.9c-.3 0-.6-.1-.8-.4-.5-.5-.5-1.3 0-1.8l3.1-3.1c.5-.5 1.3-.5 1.8 0 .5.5.5 1.3 0 1.8l-3.1 3.1c-.2.3-.5.4-.8.4z" />
-            </symbol>
-            <symbol id="icon-potato" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                <circle cx="10" cy="10" r="1.5" />
-                <circle cx="14" cy="14" r="1.5" />
-                <circle cx="14" cy="10" r="1.5" />
-                <circle cx="10" cy="14" r="1.5" />
-            </symbol>
-            <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </symbol>
-            <symbol id="icon-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path>
-            </symbol>
+      <div class="section-block">
+        <div class="section-head"><div><div class="eyebrow">Explorer</div><h2>Catégories</h2></div></div>
+        <div id="home-categories" class="category-grid-v2"></div>
+      </div>
+    </section>
 
-        </defs>
-    </svg>
+    <section id="page-catalog" class="app-page">
+      <div class="eyebrow">Catalogue</div>
+      <h1 class="catalog-title">Nos produits</h1>
+      <div class="search-box"><span>⌕</span><input id="catalog-search" type="search" placeholder="Rechercher un produit"></div>
+      <div id="catalog-chips" class="filter-chips"></div>
+      <div id="catalog-grid" class="catalog-grid"></div>
+    </section>
 
-    <div id="page-loader" class="page active">
-        <div class="loader-box">
-            <img src="Logo.jpg" alt="Logo">
-            <div class="app-name"> ☕ MISTER FREEZE 74&🇨🇭 🌿 </div>
-            <div class="loading-text">Chargement de MISTER FREEZE 74...</div>
+    <section id="page-vip" class="app-page">
+      <div class="panel-card">
+        <div class="panel-title">
+          <div><div class="eyebrow">Club Mister Freeze</div><h1 style="margin:10px 0 0">👑 Mon statut VIP</h1></div>
         </div>
-    </div>
+        <div id="vip-medal" class="vip-medal">🥉</div>
+        <p class="muted">Votre niveau</p>
+        <div id="vip-level" class="vip-level">Bronze</div>
+        <div class="vip-stat">Commandes terminées <b id="vip-completed">0</b><br>Progression <b id="vip-progress">0 / 5</b></div>
+        <div class="progress-shell"><span id="vip-progress-bar"></span></div>
+        <p id="vip-copy" class="vip-copy">Encore 5 commandes terminées pour atteindre le niveau suivant.</p>
+      </div>
+    </section>
 
-    <div id="page-home" class="page">
-        <div class="top-marquee">
-            <div class="marquee-content">
-                <span>REJOINGNEZ NOS RESEAUX 📲</span>
-                <span>REJOINGNEZ NOS RESEAUX 📲</span>
-                <span>REJOINGNEZ NOS RESEAUX 📲</span>
-                <span>REJOINGNEZ NOS RESEAUX 📲</span>
-                <span>REJOINGNEZ NOS RESEAUX 📲</span>
-                <span>REJOINGNEZ NOS RESEAUX 📲</span>
-            </div>
-        </div>
-        <div class="home-header">
-            <img src="Logo.jpg" alt="Logo" class="home-logo">
-            <button class="cart-button" id="home-cart-button">
-                <svg width="20" height="20">
-                    <use href="#icon-cart" />
-                </svg>
-                <span class="cart-count">0</span>
-            </button>
-        </div>
+    <section id="page-cart" class="app-page">
+      <div class="eyebrow">Votre sélection</div>
+      <h1 class="cart-title">Panier</h1>
+      <div id="cart-items"></div>
+      <div class="subtotal-card">
+        <div class="subtotal-line"><span>Sous-total</span><b id="cart-subtotal">0,00 €</b></div>
+        <p>Les modalités de remise sont confirmées après la commande.</p>
+      </div>
+      <div id="cart-telegram-identity" class="identity-line">Telegram : —</div>
 
-        <div class="filters">
-            <div class="filter-input-wrapper" style="display:none ;">
-                <svg width="20" height="20">
-                    <use href="#icon-search" />
-                </svg>
-                <input type="text" id="search-filter" placeholder="Rechercher un produit...">
-            </div>
-            <div class="filter-select-wrapper">
-                <!--  <svg width="20" height="20">
-                    <use href="#icon-quality" />
-                </svg> -->
-                <select id="quality-filter"></select>
-            </div>
-            <div class="filter-select-wrapper" style="display:none ;">
-                <!--  <svg width="20" height="20">
-                    <use href="#icon-farm" />
-                </svg> -->
-                <select id="farm-filter"></select>
-            </div>
-        </div>
-        <div id="product-list" class="product-grid">
-        </div>
-    </div>
+      <div class="field-group"><label>Nom complet</label><input id="customer-name" type="text" placeholder="Votre nom"></div>
+      <div class="field-group"><label>Téléphone</label><input id="customer-phone" type="tel" placeholder="+33 / +41 ..."></div>
+      <div class="field-group">
+        <label>Mode de remise</label>
+        <select id="delivery-mode">
+          <option>Retrait sur place</option>
+          <option>Livraison</option>
+        </select>
+      </div>
+      <div id="mode-note" class="mode-note">L’adresse de retrait sera envoyée en privé après validation.</div>
+      <div class="field-group"><input id="delivery-address" type="text" placeholder="📍 Adresse de livraison" hidden></div>
+      <div class="field-group"><label>Commentaire</label><textarea id="customer-comment" maxlength="500" placeholder="Optionnel"></textarea></div>
 
-    <div id="page-product" class="page">
-        <div class="page-header">
-            <button class="back-button">‹</button>
-            <span class="title" id="product-page-title"></span>
-            <button class="close-button">×</button>
-        </div>
-        <div class="page-content">
-            <video class="product-video" poster="https://placehold.co/400x711/000000/ffffff?text=Video"
-                controls></video>
-            <div id="product-details-content" class="product-details">
-            </div>
-        </div>
-    </div>
+      <div class="field-group"><label>Paiement</label></div>
+      <div class="payment-row">
+        <button class="active" data-payment="Espèce">💵 Espèce</button>
+        <button data-payment="Crypto">₿ Crypto</button>
+      </div>
+      <button id="submit-order" class="gradient-btn">Valider la commande</button>
+    </section>
 
-    <div id="page-cart" class="page">
-        <div class="page-header">
-            <span class="title">Mon Panier</span>
-            <button class="close-button">×</button>
-        </div>
-        <div class="page-content">
-            <div id="cart-items-container">
-            </div>
-        </div>
-        <div class="cart-actions">
-            <div id="cart-warning" style="display: none; background: rgba(255, 59, 48, 0.15); border: 1px solid var(--red-color); border-radius: 10px; padding: 12px; margin-bottom: 15px; font-size: 0.85rem; color: #ffbcbc; text-align: center;">
-                ⚠️ <strong>ATTENTION</strong> : Avant de commander, merci de consulter la page <strong>INFO</strong>. <br>
-                Des règles strictes (CNI) et des minimums de commande s'appliquent.
-            </div>
-            <div class="cart-total">
-                <span>Total:</span>
-                <span id="cart-total-price">0.00€</span>
-            </div>
-            <button id="checkout-button" class="main-action-btn">Commander</button>
-            <button id="cart-continue-shopping" class="secondary-action-btn">Continuer les achats</button>
-        </div>
-    </div>
+    <section id="page-orders" class="app-page">
+      <div class="panel-card">
+        <div class="panel-title"><div><div class="eyebrow">Suivi</div><h1 style="margin:10px 0 18px">Mes commandes</h1></div></div>
+        <div id="orders-list"></div>
+      </div>
+    </section>
+  </main>
+</div>
 
-    <div id="page-confirmation" class="page">
-        <div class="page-header">
-            <span class="title">Détails de votre commande</span>
-            <button class="close-button">×</button>
-        </div>
-        <div class="page-content">
-            <div class="cart-summary">
-                <span class="resume">🗓 Résumé de la commande</span>
-                <p>
-                    <span id="confirmation-items-count">0 article</span> <br>
-                    <span class="total">Total: <span id="confirmation-total-price">0.00€</span></span>
-                </p>
-            </div>
-            <h4>Détail des articles</h4>
-            <div id="confirmation-items-list">
-            </div>
+<nav class="bottom-nav-v2">
+  <button class="active" data-tab="home"><span>⌂</span><small>Accueil</small></button>
+  <button data-tab="catalog"><span>⌕</span><small>Catalogue</small></button>
+  <button class="vip-nav" data-tab="vip"><span>👑</span><small>VIP</small></button>
+  <button data-tab="cart"><span>🛒</span><small>Panier</small></button>
+  <button data-tab="orders"><span>▣</span><small>Commandes</small></button>
+</nav>
 
-            <div class="order-delivery-form">
-                <h4>📦 Mode de réception</h4>
-                <div class="delivery-mode-options">
-                    <button type="button" class="delivery-mode-btn active" data-mode="Livraison">🚚 Livraison</button>
-                    <button type="button" class="delivery-mode-btn" data-mode="Sur place">📍 Sur place</button>
-                </div>
-                <input id="order-address" class="order-field" type="text" autocomplete="street-address" placeholder="📍 Adresse de livraison *">
-                <input id="order-phone" class="order-field" type="tel" autocomplete="tel" placeholder="📞 Téléphone (optionnel)">
-                <textarea id="order-comment" class="order-field" maxlength="500" placeholder="📝 Commentaire (optionnel)"></textarea>
-                <div class="order-form-note">La commande sera envoyée directement au bot et tu recevras ici son suivi : acceptée, préparation, livraison, prête ou terminée.</div>
-            </div>
+<div id="drawer-backdrop" class="drawer-backdrop"></div>
+<aside id="side-drawer" class="side-drawer">
+  <div class="drawer-head">
+    <div class="drawer-brand"><img src="Logo.jpg" alt=""><div><strong>MISTER FREEZE 74</strong><small class="muted">Mini App</small></div></div>
+    <button id="close-menu" class="close-panel">×</button>
+  </div>
+  <div class="drawer-links">
+    <button data-tab="catalog">🛍 Ouvrir le catalogue</button>
+    <button data-tab="orders">🧾 Mes commandes</button>
+    <button data-tab="vip">👑 Mon statut VIP</button>
+    <button id="open-contact">💬 Contact @MISTERFREEZE74</button>
+  </div>
+</aside>
 
-            <div class="promo-container">
-                <h4>Code Promo</h4>
-                <div id="promo-input-container">
-                    <input type="text" id="promo-code-input" placeholder="Votre code...">
-                    <button id="apply-promo-btn" class="secondary-action-btn">Appliquer</button>
-                </div>
-                <div id="promo-applied-container" style="display:none;">
-                    <span id="promo-applied-text"></span>
-                    <button id="remove-promo-btn">×</button>
-                </div>
-            </div>
+<div id="product-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-top"><button id="close-product">×</button></div>
+    <div id="product-modal-body"></div>
+  </div>
+</div>
 
-            <div class="payment-selector">
-                <h4>Paiement</h4>
-                <div class="payment-options">
-                    <button class="payment-btn active" data-method="Espèce">💵 Espèce</button>
-                    <button class="payment-btn" data-method="Crypto">₿ Crypto</button>
-                </div>
-            </div>
-
-            <div class="cart-total" id="confirmation-summary">
-            </div>
-            <!--   <div class="cart-total">
-                <span>💰 Total final:</span>
-                <span id="confirmation-final-price">0.00€</span>
-            </div> -->
-        </div>
-        <div class="cart-actions">
-
-            <button id="confirmation-modify-order" class="secondary-action-btn">✏️ Modifier</button>
-
-            <button id="confirm-order-button" class="main-action-btn telegram-button">
-                ✅ CONFIRMER LA COMMANDE
-            </button>
-
-
-            <!--     <button id="copy-order-btn" class="secondary-action-btn">
-                <span>Étape 1: 📋 Copier la commande </span>
-
-               <svg width="20" height="20"><use href="#icon-clipboard"/></svg>
- -->
-            <!-- </button>
-
-            <button id="confirm-order-button" class="main-action-btn telegram-button">
-                <span>Étape 2: 💬 Contacter sur Potato</span>
-            </button> -->
-            <!--             <button id="confirmation-modify-order" class="secondary-action-btn">✏️ Modifier</button>
- -->
-            <!--             <button id="confirm-order-button" class="main-action-btn telegram-button">💬 Contacter sur Potato</button>
- -->
-        </div>
-    </div>
-
-
-    <div class="bottom-nav">
-        <button id="nav-menu" data-page="page-home" class="nav-item active">
-            <svg width="20" height="20">
-                <use href="#icon-home" />
-            </svg>
-            <p style="
-            margin: inherit;"> HOME </p>
-        </button>
-        <button id="nav-info" data-page="page-info" class="nav-item">
-            <svg width="20" height="20">
-                <use href="#icon-info" />
-            </svg>
-            <p style="margin: inherit;"> INFO </p>
-        </button>
-        <button id="nav-contact" data-page="page-contact" class="nav-item">
-            <svg width="20" height="20">
-                <use href="#icon-link" />
-            </svg>
-            <p style="
-            margin: inherit;"> LINKS </p>
-        </button>
-    </div>
-
-    <div id="notification-toast"></div>
-    <script src="script.js"></script>
+<div id="toast"></div>
+<script src="script.js"></script>
 </body>
-
 </html>

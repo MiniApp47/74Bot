@@ -1,31 +1,25 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    tg.setHeaderColor('#120b25');
-    tg.setBackgroundColor('#05030c');
-  // --- CONTACT MISTER FREEZE 74 ---
-  const ORDER_CONTACT_USERNAME = 'MISTERFREEZE74';
-  const ORDER_CONTACT_URL = `https://t.me/${ORDER_CONTACT_USERNAME}`;
-  const contactLinks = [
-    {
-      name: 'TELEGRAM ❄️',
-      url: ORDER_CONTACT_URL,
-      id: 'telegram-contact',
-      className: 'telegram-contact',
-      text: '@MISTERFREEZE74 💬'
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+        tg.ready();
+        tg.expand();
+        try {
+            tg.setHeaderColor('#09050f');
+            tg.setBackgroundColor('#07040c');
+        } catch (e) {}
     }
-  ];
 
- // --- DONNÉES MISTER FREEZE 74 ---
- const appData = [
+    const ORDER_CONTACT_USERNAME = 'MISTERFREEZE74';
+    const ORDER_CONTACT_URL = `https://t.me/${ORDER_CONTACT_USERNAME}`;
+
+const appData = [
      {
         id: 'EXTRA',
         name: '⛄ EXTRA',
         type: '⛄ EXTRA',
         quality: '⛄ EXTRA',
         image: 'CategVape.png',
-           farms: [
+            farms: [
              {
                 id: 'BLANCHE ⛰',
                 name: 'BLANCHE ⛰',
@@ -76,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
            
         ]
+        
     },
    /*  {
         id: 'HASH',
@@ -305,560 +300,370 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             ]
         } */
-   
 
-    // --- VARIABLES D'ÉTAT ---
-    let cart = [];
-    let currentFilters = { searchTerm: '', quality: 'all', farm: 'all' };
-    
-    // NAVIGATION ETAT (Logique Pistachio)
-    let currentView = 'categories'; // 'categories', 'farms' (sous-cat), 'simple_products' (direct), 'products' (via farm)
-    let currentCategoryId = null;
-    let currentFarmId = null;
-    let appliedPromo = null;
+    // ============================================================
+    //  MISTER FREEZE 74 — UI inspirée de la vidéo fournie
+    // ============================================================
+    let cart = loadJSON(storageKey('cart'), []);
+    let orders = loadJSON(storageKey('orders'), []);
+    let activeCategory = 'all';
+    let searchTerm = '';
     let paymentMethod = 'Espèce';
-    let orderMode = 'Livraison';
+    let selectedProduct = null;
 
-    const validPromoCodes = {
-        "ACTUPLUG33": { type: 'fixed', value: 10, appliesTo: 'eligible', cumulative: false }
+    const STATUS_LABELS = {
+        new: '🆕 Reçue',
+        accepted: '✅ Acceptée',
+        cancelled: '❌ Annulée',
+        preparation: '📦 Préparation',
+        delivery: '🚚 En livraison',
+        ready: '📍 Prête sur place',
+        done: '✔️ Terminée'
     };
 
-    // --- SÉLECTEURS ---
-    const pages = document.querySelectorAll('.page');
-    const productListContainer = document.getElementById('product-list');
-    const filterContainer = document.querySelector('.filters');
-    const searchFilterWrapper = document.getElementById('search-filter').parentElement;
-    const qualityFilterWrapper = document.getElementById('quality-filter').parentElement;
-    const farmFilterWrapper = document.getElementById('farm-filter').parentElement;
+    const TIER_RULES = [
+        { name: 'Bronze', min: 0, next: 5, emoji: '🥉' },
+        { name: 'Silver', min: 5, next: 10, emoji: '🥈' },
+        { name: 'Gold', min: 10, next: 20, emoji: '🥇' },
+        { name: 'Diamond', min: 20, next: null, emoji: '💎' }
+    ];
+
+    function telegramUser() {
+        return tg?.initDataUnsafe?.user || {};
+    }
+
+    function storageKey(name) {
+        const uid = telegramUser().id || 'guest';
+        return `mf74_${uid}_${name}`;
+    }
+
+    function loadJSON(key, fallback) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+            return fallback;
+        }
+    }
+
+    function saveState() {
+        localStorage.setItem(storageKey('cart'), JSON.stringify(cart));
+        localStorage.setItem(storageKey('orders'), JSON.stringify(orders));
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function money(value) {
+        return `${Number(value || 0).toFixed(2).replace('.', ',')} €`;
+    }
+
+    function haptic(type='selection') {
+        try {
+            if (!tg?.HapticFeedback) return;
+            if (type === 'success' || type === 'error' || type === 'warning') {
+                tg.HapticFeedback.notificationOccurred(type);
+            } else {
+                tg.HapticFeedback.selectionChanged();
+            }
+        } catch (e) {}
+    }
+
+    let toastTimer;
+    function toast(message) {
+        const el = document.getElementById('toast');
+        if (!el) return;
+        clearTimeout(toastTimer);
+        el.textContent = message;
+        el.classList.add('show');
+        toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+    }
+
+    function categoryIcon(category) {
+        const value = `${category.name || ''} ${category.type || ''}`.toLowerCase();
+        if (value.includes('fleur') || value.includes('weed')) return '🌿';
+        if (value.includes('résine') || value.includes('resine') || value.includes('hash')) return '🟫';
+        if (value.includes('puff') || value.includes('vape')) return '💨';
+        if (value.includes('extra')) return '❄️';
+        if (value.includes('collection')) return '🎁';
+        return '✨';
+    }
+
+    function flattenProducts() {
+        const products = [];
+        appData.forEach(category => {
+            if (Array.isArray(category.products)) {
+                category.products.forEach(product => products.push({...product, _categoryId: category.id, _categoryName: category.name}));
+            }
+            if (Array.isArray(category.farms)) {
+                category.farms.forEach(farm => {
+                    (farm.products || []).forEach(product => products.push({
+                        ...product,
+                        _categoryId: category.id,
+                        _categoryName: category.name,
+                        _farmId: farm.id
+                    }));
+                });
+            }
+        });
+        return products;
+    }
+
+    function productFormats(product) {
+        return Array.isArray(product.tarifs) ? product.tarifs.length : 0;
+    }
+
+    function allProductsFiltered() {
+        return flattenProducts().filter(product => {
+            const categoryMatch = activeCategory === 'all' || product._categoryId === activeCategory;
+            const query = searchTerm.trim().toLowerCase();
+            const searchMatch = !query || `${product.name || ''} ${product.farm || ''} ${product.description || ''}`.toLowerCase().includes(query);
+            return categoryMatch && searchMatch;
+        });
+    }
 
     function getProductById(productId) {
-        for (const category of appData) {
-            if (category.products) {
-                const product = category.products.find(p => p.id === productId);
-                if (product) return product;
-            }
-            if (category.farms) {
-                for (const farm of category.farms) {
-                    const product = farm.products.find(p => p.id === productId);
-                    if (product) return product;
-                }
-            }
-        }
-        return undefined;
+        return flattenProducts().find(p => String(p.id) === String(productId));
     }
 
-    function showPage(pageId) {
-        pages.forEach(p => p.classList.remove('active'));
-        const page = document.getElementById(pageId);
-        if (page) page.classList.add('active');
-
-        const homeNav = document.getElementById('nav-menu');
-        const infoNav = document.getElementById('nav-info');
-        const contactNav = document.getElementById('nav-contact');
-
-        if(homeNav) homeNav.classList.remove('active');
-        if(infoNav) infoNav.classList.remove('active');
-        if(contactNav) contactNav.classList.remove('active');
-
-        if (pageId === 'page-contact') contactNav.classList.add('active');
-        else if (pageId === 'page-info') infoNav.classList.add('active');
-        else homeNav.classList.add('active');
+    function cartCount() {
+        return cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
     }
 
-    // --- RENDER HOME (Logique Pistachio adaptée) ---
-    function renderHomePage() {
-        filterContainer.style.display = 'flex';
+    function cartTotal() {
+        return cart.reduce((sum, item) => sum + Number(item.totalPrice || 0), 0);
+    }
 
-        // Nettoyage boutons retour
-        const existingBackBtnCat = filterContainer.querySelector('.back-to-categories-btn');
-        if (existingBackBtnCat) existingBackBtnCat.remove();
-        const existingBackBtnFarm = filterContainer.querySelector('.back-to-farms-btn');
-        if (existingBackBtnFarm) existingBackBtnFarm.remove();
+    function updateCartBadge() {
+        document.querySelectorAll('[data-cart-count]').forEach(el => {
+            el.textContent = cartCount();
+            el.classList.toggle('is-empty', cartCount() === 0);
+        });
+    }
 
-        // 1. Vue CATÉGORIES (Racine)
-        if (currentView === 'categories') {
-            renderCategoryList();
-            searchFilterWrapper.style.display = 'none';
-            farmFilterWrapper.style.display = 'none';
-            qualityFilterWrapper.style.display = 'flex';
-            productListContainer.style.gridTemplateColumns = 'repeat(1, 1fr)';
-
-        // 2. Vue SOUS-CATÉGORIES (Liste Farms)
-        } else if (currentView === 'farms') {
-            renderFarmList(currentCategoryId); // Affiche la liste Frozen/Static...
-            searchFilterWrapper.style.display = 'none';
-            farmFilterWrapper.style.display = 'none';
-            qualityFilterWrapper.style.display = 'none';
-            productListContainer.style.gridTemplateColumns = 'repeat(1, 1fr)'; // Liste verticale
-
-            // Bouton Retour
-            const category = appData.find(c => c.id === currentCategoryId);
-            createBackButton('back-to-categories-btn', category.name);
-
-        // 3. Vue PRODUITS DIRECTS (ex: Edibles)
-        } else if (currentView === 'simple_products') {
-            renderProductListSimple(currentCategoryId);
-            searchFilterWrapper.style.display = 'flex';
-            farmFilterWrapper.style.display = 'flex';
-            qualityFilterWrapper.style.display = 'none';
-            productListContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-
-            const category = appData.find(c => c.id === currentCategoryId);
-            createBackButton('back-to-categories-btn', category.name);
-
-        // 4. Vue PRODUITS VIA SOUS-CAT (ex: Hash -> Frozen -> Produits)
-        } else if (currentView === 'products') {
-            renderProductList(currentCategoryId, currentFarmId);
-            searchFilterWrapper.style.display = 'flex';
-            farmFilterWrapper.style.display = 'flex';
-            qualityFilterWrapper.style.display = 'none';
-            productListContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-
-            const category = appData.find(c => c.id === currentCategoryId);
-            const farm = category.farms.find(f => f.id === currentFarmId);
-            createBackButton('back-to-farms-btn', farm.name);
+    function renderShopHeader() {
+        const user = telegramUser();
+        const label = document.getElementById('shop-user-subtitle');
+        if (label) {
+            label.textContent = user.username ? `@${user.username} • 18+` : 'Coffee Shop • 18+';
         }
     }
 
-    function createBackButton(className, text) {
-        const backButton = document.createElement('button');
-        backButton.className = className;
-        backButton.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg> ${text}`;
-        // Style inline pour correspondre à ton design
-        backButton.style.cssText = `
-            background: linear-gradient(180deg, black, transparent); 
-            border-bottom: 2px solid #2ed8ff;
-            border-top: none; border-left: none; border-right: none;
-            color: white; padding: 10px 15px; 
-            border-radius: 10px; font-size: 1.1rem; 
-            font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; margin-top: 3vh; font-family: Copperplate;
-        `;
-        filterContainer.prepend(backButton);
+    function renderHome() {
+        const popular = flattenProducts().slice(0, 6);
+        const popularEl = document.getElementById('popular-products');
+        if (popularEl) {
+            popularEl.innerHTML = popular.length
+                ? popular.map(productCardHTML).join('')
+                : `<div class="empty-inline">Les produits populaires apparaîtront ici dès qu'ils seront ajoutés au catalogue.</div>`;
+        }
+
+        const categories = document.getElementById('home-categories');
+        if (categories) {
+            categories.innerHTML = appData.map(category => `
+                <button class="category-tile" data-open-category="${escapeHTML(category.id)}">
+                    <span class="category-emoji">${categoryIcon(category)}</span>
+                    <strong>${escapeHTML(category.name || category.id)}</strong>
+                    <small>${escapeHTML(category.type || 'Sélection')}</small>
+                </button>
+            `).join('');
+        }
     }
 
-   // --- MODIFIÉ : renderCategoryList (CORRIGÉ POUR LE SELECT) ---
-   function renderCategoryList() {
-    const filteredCategories = appData.filter(category => {
-        // 1. Filtre Recherche (Barre de texte)
-        const searchMatch = category.name.toLowerCase().includes(currentFilters.searchTerm.toLowerCase());
-        
-        // 2. Filtre Dropdown (Le Select "Qualité") - C'est cette ligne qui manquait !
-        const qualityMatch = currentFilters.quality === 'all' || category.quality === currentFilters.quality;
-        
-        // On retourne VRAI seulement si les deux conditions sont remplies
-        return searchMatch && qualityMatch;
-    });
-
-    productListContainer.innerHTML = '';
-    
-    if (filteredCategories.length === 0) {
-        // Message si on filtre et qu'il n'y a rien
-        productListContainer.innerHTML = '<p class="no-results" style="grid-column: 1/-1; text-align: center; padding: 20px; color: #888;">Aucune catégorie ne correspond.</p>';
-        return;
-    }
-
-    filteredCategories.forEach(category => {
-        const card = document.createElement('div');
-        card.className = 'category-card';
-        card.dataset.categoryId = category.id;
-        // On garde ton affichage image
-        card.innerHTML = `<img src="${category.image}" alt="${category.name}">`;
-        productListContainer.appendChild(card);
-    });
-}
-
-    // --- RENDER SOUS-CATÉGORIES (LISTE STYLE PISTACHIO) ---
-    function renderFarmList(categoryId) {
-        const category = appData.find(c => c.id === categoryId);
-        if (!category) return;
-
-        const farms = category.farms;
-        productListContainer.style.gridTemplateColumns = '1fr'; // Liste verticale
-        productListContainer.style.gap = '10px'; 
-        productListContainer.innerHTML = '';
-
-        farms.forEach(farm => {
-            const btn = document.createElement('div');
-            btn.className = 'farm-list-btn'; // Utilise le CSS ajouté
-            btn.dataset.farmId = farm.id;
-
-            const productCount = farm.products.length;
-            const countText = productCount > 0 ? `${productCount} prod.` : '';
-
-            btn.innerHTML = `
-            <div class="farm-btn-left">
-                <div class="farm-btn-info">
-                    <span class="farm-btn-title">${farm.name}</span>
-                    <span class="farm-btn-subtitle">${farm.badgeText || countText}</span>
+    function productCardHTML(product) {
+        const firstPrice = product?.tarifs?.[0]?.price;
+        return `
+            <article class="product-card-v2">
+                <button class="product-image-wrap" data-product-id="${escapeHTML(product.id)}">
+                    <img src="${escapeHTML(product.image || 'Logo.jpg')}" alt="${escapeHTML(product.name || 'Produit')}" loading="lazy">
+                    <span class="format-pill">${productFormats(product)} format${productFormats(product) > 1 ? 's' : ''}</span>
+                </button>
+                <div class="product-card-body">
+                    <strong>${escapeHTML(product.name || 'Produit')}</strong>
+                    <small>${escapeHTML(product.farm || product._categoryName || '')}</small>
+                    <div class="product-price-line">
+                        <span>${firstPrice != null ? `À partir de ${money(firstPrice)}` : 'Tarif à venir'}</span>
+                        <span class="age-badge">18+</span>
+                    </div>
+                    <button class="gradient-btn small" data-product-id="${escapeHTML(product.id)}">Voir le produit</button>
                 </div>
-            </div>
-            <div class="farm-btn-right">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </div>`;
-            productListContainer.appendChild(btn);
-        });
+            </article>
+        `;
     }
 
-    // RENDER PRODUITS DIRECTS (Pour Edibles)
-    function renderProductListSimple(categoryId) {
-        const category = appData.find(c => c.id === categoryId);
-        if (!category || !category.products) return;
-
-        const filteredProducts = category.products.filter(product => {
-            return product.name.toLowerCase().includes(currentFilters.searchTerm.toLowerCase());
-        });
-
-        productListContainer.innerHTML = '';
-        renderProductCards(filteredProducts);
-    }
-
-    // RENDER PRODUITS VIA SOUS-CAT (Pour Hash/Weed)
-    function renderProductList(categoryId, farmId) {
-        const category = appData.find(c => c.id === categoryId);
-        const farm = category.farms.find(f => f.id === farmId);
-        if (!farm) return;
-
-        const filteredProducts = farm.products.filter(product => {
-            return product.name.toLowerCase().includes(currentFilters.searchTerm.toLowerCase());
-        });
-
-        productListContainer.innerHTML = '';
-        renderProductCards(filteredProducts);
-    }
-
-    // Helper pour générer les cartes produits
-    function renderProductCards(products) {
-        if (products.length === 0) {
-            productListContainer.innerHTML = '<p class="no-results">Aucun produit trouvé.</p>';
-            return;
+    function renderCatalogue() {
+        const chips = document.getElementById('catalog-chips');
+        if (chips) {
+            chips.innerHTML = [
+                `<button class="filter-chip ${activeCategory === 'all' ? 'active' : ''}" data-filter-category="all">Tout</button>`,
+                ...appData.map(category => `
+                    <button class="filter-chip ${activeCategory === category.id ? 'active' : ''}" data-filter-category="${escapeHTML(category.id)}">
+                        ${escapeHTML(category.name || category.id)}
+                    </button>
+                `)
+            ].join('');
         }
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'product-card product-item-card';
-            card.dataset.productId = product.id;
 
-            let flagHTML = product.flag ? `<span class="product-flag">${product.flag}</span>` : '';
-            card.innerHTML = `
-                <img src="${product.image}" alt="${product.name}">
-                <div class="info">
-                    <div class="name">${product.name} ${flagHTML}</div>
-                    <div class="farm">${product.farm}</div>
-                    <div class="price">${product.tarifs[0].price.toFixed(2)}€</div>
-                </div>`;
-            productListContainer.appendChild(card);
-        });
+        const grid = document.getElementById('catalog-grid');
+        const products = allProductsFiltered();
+        if (grid) {
+            grid.innerHTML = products.length
+                ? products.map(productCardHTML).join('')
+                : `<div class="empty-state"><span>❄️</span><strong>Aucun produit</strong><p>Cette sélection est vide pour le moment.</p></div>`;
+        }
     }
 
-    // --- PAGE PRODUIT ---
-    function renderProductPage(productId) {
+    function openProduct(productId) {
         const product = getProductById(productId);
         if (!product) return;
+        selectedProduct = product;
+        const modal = document.getElementById('product-modal');
+        const body = document.getElementById('product-modal-body');
+        if (!modal || !body) return;
 
-        const videoElement = document.querySelector('#page-product .product-video');
-        if(videoElement) {
-             videoElement.src = product.video || '';
-             videoElement.poster = product.image;
-        }
-
-        document.getElementById('product-page-title').innerText = product.name;
-        const detailsContainer = document.getElementById('product-details-content');
-
-        let tarifsHTML = product.tarifs.map(tarif => `
-        <div class="tarif-item">
-            <div class="box-tarif">
-                <div class="tarif-wieght">${tarif.weight}</div>
-                <div class="tarif-price">${tarif.price.toFixed(2)}€</div>
+        const priceRows = (product.tarifs || []).map(t => `
+            <div class="price-row-v2">
+                <div>
+                    <strong>${escapeHTML(t.weight)}</strong>
+                    <span>${money(t.price)}</span>
+                </div>
+                <button class="add-cart-round" data-add-product="${escapeHTML(product.id)}" data-weight="${escapeHTML(t.weight)}" data-price="${Number(t.price)}">+</button>
             </div>
-            <button class="add-to-cart-btn" data-product-id="${product.id}" data-weight="${tarif.weight}" data-price="${tarif.price}">
-                <svg width="20" height="20"><use href="#icon-cart"/></svg>
-            </button>
-        </div>`).join('');
+        `).join('');
 
-       // --- DANS TA FONCTION renderProductPage ---
-detailsContainer.innerHTML = `
-<div class="name">${product.name}</div>
-<div class="farm">${product.farm}</div>
-${product.description ? `<div class="product-description">${product.description}</div>` : ''} 
-<h4 class="tarifs-title">💰 Tarifs disponibles :</h4>
-<div class="tarifs-grid-container">${tarifsHTML}</div>
-`;
-        showPage('page-product');
-    }
-
-    // --- PANIER & CONFIRMATION ---
-    function renderCart() {
-        const cartContainer = document.getElementById('cart-items-container');
-        if (cart.length === 0) {
-            cartContainer.innerHTML = '<p>Votre panier est vide.</p>';
-            document.getElementById('cart-total-price').innerText = '0.00€';
-            updateCartCount();
-            return;
-        }
-        cartContainer.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <img src="${item.image}" alt="${item.name}">
-                <div class="item-details">
-                    <div class="name">${item.name}</div>
-                    <div class="gram" >${item.weight} - ${item.unitPrice.toFixed(2)}€</div>
-                    <div class="price">${item.totalPrice.toFixed(2)}€</div>
-                </div>
-                <div class="quantity-selector">
-                    <button class="quantity-btn" data-action="decrease" data-id="${item.id}">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-btn" data-action="increase" data-id="${item.id}">+</button>
-                </div>
-            </div>`).join('');
-        
-        const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        document.getElementById('cart-total-price').innerText = `${total.toFixed(2)}€`;
-        updateCartCount();
-    }
-
-    function renderConfirmation() {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        let subTotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        let discount = 0;
-        let discountableAmount = 0;
-
-        if (appliedPromo) {
-            const promo = validPromoCodes[appliedPromo];
-            if (promo.appliesTo === 'eligible') {
-                cart.forEach(item => {
-                    const product = getProductById(item.productId);
-                    if (product && product.promoEligible) discountableAmount += item.totalPrice;
-                });
-            } else {
-                discountableAmount = subTotal;
-            }
-            if (promo.type === 'percent') discount = (discountableAmount * promo.value) / 100;
-            else discount = promo.value;
-        }
-        if (discount > subTotal) discount = subTotal;
-        const totalPrice = subTotal - discount;
-
-        document.getElementById('confirmation-items-count').innerText = `${totalItems} article${totalItems > 1 ? 's' : ''}`;
-        document.getElementById('confirmation-total-price').innerText = `${totalPrice.toFixed(2)}€`;
-
-        const itemsList = document.getElementById('confirmation-items-list');
-        itemsList.innerHTML = cart.map((item, index) => `
-             <div class="cart-item" style="border-bottom:1px solid #333;">
-                <img src="${item.image}" alt="${item.name}">
-                <div class="item-details">
-                    <div style="color:white; font-weight:bold;">${index + 1}. ${item.name}</div>
-                    <div style="color:#aaa;">Qté: ${item.quantity}x ${item.weight}</div>
-                    <div style="color:#aaa;">PU: ${item.unitPrice.toFixed(2)}€</div>
-                </div>
-            </div>`).join('');
-
-        const promoInputContainer = document.getElementById('promo-input-container');
-        const promoAppliedContainer = document.getElementById('promo-applied-container');
-        if (appliedPromo) {
-            promoInputContainer.style.display = 'none';
-            promoAppliedContainer.style.display = 'flex';
-            document.getElementById('promo-applied-text').innerText = `Code "${appliedPromo}" appliqué !`;
-        } else {
-            promoInputContainer.style.display = 'flex';
-            promoAppliedContainer.style.display = 'none';
-            document.getElementById('promo-code-input').value = '';
-        }
-
-        document.querySelectorAll('.payment-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.method === paymentMethod);
-        });
-
-        document.querySelectorAll('.delivery-mode-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.mode === orderMode);
-        });
-        const addressInput = document.getElementById('order-address');
-        if (addressInput) {
-            const isDelivery = orderMode === 'Livraison';
-            addressInput.style.display = isDelivery ? 'block' : 'none';
-            addressInput.required = isDelivery;
-        }
-
-        const summaryContainer = document.getElementById('confirmation-summary');
-        let summaryHTML = `
-            <div class="summary-line"><span>Sous-total:</span><span>${subTotal.toFixed(2)}€</span></div>
+        body.innerHTML = `
+            <div class="product-detail-visual">
+                ${product.video ? `<video controls playsinline poster="${escapeHTML(product.image || '')}" src="${escapeHTML(product.video)}"></video>` : `<img src="${escapeHTML(product.image || 'Logo.jpg')}" alt="${escapeHTML(product.name)}">`}
+            </div>
+            <div class="eyebrow">${escapeHTML(product._categoryName || 'SÉLECTION')}</div>
+            <h2>${escapeHTML(product.name || '')}</h2>
+            <p class="muted">${escapeHTML(product.farm || '')}</p>
+            ${product.description ? `<p class="product-description-v2">${escapeHTML(product.description)}</p>` : ''}
+            <div class="price-list-v2">${priceRows || '<p class="muted">Tarifs à venir.</p>'}</div>
         `;
-        if (discount > 0) {
-            summaryHTML += `<div class="summary-line discount"><span>Réduction:</span><span>-${discount.toFixed(2)}€</span></div>`;
-        }
-        summaryHTML += `<div class="summary-line total"><span>💰 Total final:</span><span>${totalPrice.toFixed(2)}€</span></div>`;
-        summaryContainer.innerHTML = summaryHTML;
-        showPage('page-confirmation');
-    }
-
-    // --- ACTIONS DIVERSES ---
-    function renderContactPage() {
-        const linksContainer = document.getElementById('contact-links-container');
-        if (contactLinks.length === 0) {
-            linksContainer.innerHTML = '<div style="text-align:center;color:#aaa8c7;padding:20px;">Contact indisponible.</div>';
-            return;
-        }
-        linksContainer.innerHTML = contactLinks.map(link => `
-        <a href="${link.url}" class="contact-link ${link.className}" target="_blank">
-            <span>${link.text}</span>
-        </a>`).join('');
-    }
-
-    function updateCartCount() {
-        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-        const cartCountElements = document.querySelectorAll('.cart-count');
-        cartCountElements.forEach(el => {
-            el.innerText = count;
-            el.style.display = count > 0 ? 'flex' : 'none';
-        });
-    }
-
- // --- FILTRES (CORRIGÉ) ---
- function populateFilters() {
-    const searchFilter = document.getElementById('search-filter');
-    const qualityFilter = document.getElementById('quality-filter');
-    const farmFilter = document.getElementById('farm-filter');
-
-    // 1. On rassemble tous les produits pour trouver toutes les "Farms" existantes
-    const allNestedProducts = [];
-    appData.forEach(category => {
-        if (category.farms) {
-            // Si sous-catégories
-            category.farms.forEach(subCat => allNestedProducts.push(...subCat.products));
-        } else if (category.products) {
-            // Si produits directs
-            allNestedProducts.push(...category.products);
-        }
-    });
-
-    // 2. Remplissage du SELECT "QUALITÉ" (Pour filtrer les Catégories sur l'accueil)
-    // On récupère la propriété "quality" de chaque catégorie dans appData
-    const categoryQualities = appData.map(c => c.quality).filter(Boolean); 
-    // On enlève les doublons
-    const qualities = ['all', ...new Set(categoryQualities)];
-
-    if (qualityFilter) {
-        qualityFilter.innerHTML = qualities.map(q => 
-            `<option value="${q}">${q === 'all' ? '🔍 FILTRER CATÉGORIE' : q}</option>`
-        ).join('');
-
-        // Action quand on change la qualité
-        qualityFilter.addEventListener('change', (e) => {
-            currentFilters.quality = e.target.value;
-            renderHomePage();
-        });
-    }
-
-    // 3. Remplissage du SELECT "FARM" (Pour filtrer les Produits)
-    const productFarms = allNestedProducts.map(p => p.farm).filter(Boolean);
-    const farms = ['all', ...new Set(productFarms)];
-
-    if (farmFilter) {
-        farmFilter.innerHTML = farms.map(f => 
-            `<option value="${f}">${f === 'all' ? '👨‍🌾 TOUTES les Farms' : f}</option>`
-        ).join('');
-
-        // Action quand on change la farm
-        farmFilter.addEventListener('change', (e) => {
-            currentFilters.farm = e.target.value;
-            renderHomePage();
-        });
-    }
-
-    // 4. Action de la barre de recherche
-    if (searchFilter) {
-        searchFilter.addEventListener('input', (e) => {
-            currentFilters.searchTerm = e.target.value;
-            renderHomePage();
-        });
-    }
-}
-
-    let notificationTimeout;
-    function showNotification(message) {
-        const notification = document.getElementById('notification-toast');
-        if (!notification) return;
-        clearTimeout(notificationTimeout);
-        notification.classList.remove('show');
-        void notification.offsetWidth;
-        notification.innerText = message;
-        notification.classList.add('show');
-        notificationTimeout = setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
+        modal.classList.add('open');
+        haptic();
     }
 
     function addToCart(productId, weight, price) {
-        const cartItemId = `${productId}-${weight}`;
-        const existingItem = cart.find(item => item.id === cartItemId);
         const product = getProductById(productId);
-
-        if (existingItem) {
-            existingItem.quantity++;
-            existingItem.totalPrice = existingItem.quantity * existingItem.unitPrice;
+        if (!product) return;
+        const id = `${productId}::${weight}`;
+        const existing = cart.find(i => i.id === id);
+        if (existing) {
+            existing.quantity += 1;
+            existing.totalPrice = existing.quantity * existing.unitPrice;
         } else {
             cart.push({
-                id: cartItemId,
-                productId: productId,
+                id,
+                productId,
                 name: product.name,
                 image: product.image,
-                weight: weight,
+                weight,
                 quantity: 1,
-                unitPrice: price,
-                totalPrice: price
+                unitPrice: Number(price),
+                totalPrice: Number(price)
             });
         }
+        saveState();
+        updateCartBadge();
         renderCart();
-        tg.HapticFeedback.notificationOccurred('success');
-        showNotification('✅ Produit ajouté au panier !');
+        haptic('success');
+        toast('✅ Ajouté au panier');
     }
 
-    function updateQuantity(cartItemId, action) {
-        const item = cart.find(i => i.id === cartItemId);
+    function changeQty(id, delta) {
+        const item = cart.find(i => i.id === id);
         if (!item) return;
-        if (action === 'increase') item.quantity++;
-        else if (action === 'decrease') item.quantity--;
-
-        if (item.quantity <= 0) cart = cart.filter(i => i.id !== cartItemId);
+        item.quantity += delta;
+        if (item.quantity <= 0) cart = cart.filter(i => i.id !== id);
         else item.totalPrice = item.quantity * item.unitPrice;
+        saveState();
+        updateCartBadge();
         renderCart();
-        if(document.getElementById('page-confirmation').classList.contains('active')) renderConfirmation();
     }
 
-    function calculateOrderTotals() {
-        let subTotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        let discount = 0;
-        if (appliedPromo) {
-            const promo = validPromoCodes[appliedPromo];
-            let discountableAmount = 0;
-            if (promo.appliesTo === 'eligible') {
-                cart.forEach(item => {
-                    const product = getProductById(item.productId);
-                    if (product && product.promoEligible) discountableAmount += item.totalPrice;
-                });
-            } else {
-                discountableAmount = subTotal;
-            }
-            if (promo.type === 'percent') discount = (discountableAmount * promo.value) / 100;
-            else discount = promo.value;
+    function renderCart() {
+        const list = document.getElementById('cart-items');
+        const total = document.getElementById('cart-subtotal');
+        if (total) total.textContent = money(cartTotal());
+
+        if (list) {
+            list.innerHTML = cart.length ? cart.map(item => `
+                <div class="cart-item-v2">
+                    <img src="${escapeHTML(item.image || 'Logo.jpg')}" alt="">
+                    <div class="cart-item-main">
+                        <strong>${escapeHTML(item.name)}</strong>
+                        <small>${escapeHTML(item.weight)} • ${money(item.unitPrice)}</small>
+                        <span>${money(item.totalPrice)}</span>
+                    </div>
+                    <div class="qty-control">
+                        <button data-cart-delta="-1" data-cart-id="${escapeHTML(item.id)}">−</button>
+                        <b>${item.quantity}</b>
+                        <button data-cart-delta="1" data-cart-id="${escapeHTML(item.id)}">+</button>
+                    </div>
+                </div>
+            `).join('') : `<p class="cart-empty-copy">Votre panier est vide.</p>`;
         }
-        if (discount > subTotal) discount = subTotal;
-        return { subTotal, discount, totalPrice: subTotal - discount };
+
+        const user = telegramUser();
+        const telegramLine = document.getElementById('cart-telegram-identity');
+        if (telegramLine) {
+            const username = user.username ? `@${user.username}` : 'Aucun @';
+            telegramLine.textContent = `Telegram : ${username} · ID ${user.id || '—'}`;
+        }
+        const name = document.getElementById('customer-name');
+        if (name && !name.value) {
+            name.value = [user.first_name, user.last_name].filter(Boolean).join(' ');
+        }
+        updateModeUI();
     }
 
-    function buildOrderPayload() {
-        const { totalPrice } = calculateOrderTotals();
-        const address = (document.getElementById('order-address')?.value || '').trim();
-        const phone = (document.getElementById('order-phone')?.value || '').trim();
-        const comment = (document.getElementById('order-comment')?.value || '').trim();
+    function updateModeUI() {
+        const select = document.getElementById('delivery-mode');
+        const address = document.getElementById('delivery-address');
+        const note = document.getElementById('mode-note');
+        const mode = select?.value || 'Retrait sur place';
+        const delivery = mode === 'Livraison';
+        if (address) {
+            address.hidden = !delivery;
+            address.required = delivery;
+        }
+        if (note) {
+            note.textContent = delivery
+                ? 'L’adresse et les modalités de livraison seront confirmées après validation.'
+                : 'L’adresse de retrait sera envoyée en privé après validation.';
+        }
+    }
 
+    function createClientOrderId() {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        const rand = Math.random().toString(36).slice(2, 7).toUpperCase();
+        return `MF-${y}${m}${day}-${rand}`;
+    }
+
+    function buildPayload(orderId) {
+        const user = telegramUser();
+        const mode = document.getElementById('delivery-mode')?.value || 'Retrait sur place';
         return {
             type: 'order',
-            mode: orderMode,
-            address,
-            phone,
-            comment,
+            client_order_id: orderId,
+            mode: mode === 'Retrait sur place' ? 'Sur place' : 'Livraison',
+            address: (document.getElementById('delivery-address')?.value || '').trim(),
+            phone: (document.getElementById('customer-phone')?.value || '').trim(),
+            comment: (document.getElementById('customer-comment')?.value || '').trim(),
             payment: paymentMethod,
-            total: Number(totalPrice.toFixed(2)),
+            total: Number(cartTotal().toFixed(2)),
+            customer_name: (document.getElementById('customer-name')?.value || '').trim(),
             items: cart.map(item => ({
                 name: item.name,
                 weight: item.weight,
@@ -869,262 +674,242 @@ ${product.description ? `<div class="product-description">${product.description}
         };
     }
 
-    function formatOrderMessage() {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        let subTotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-        let discount = 0;
-        if (appliedPromo) {
-            const promo = validPromoCodes[appliedPromo];
-            let discountableAmount = 0;
-            if (promo.appliesTo === 'eligible') {
-                cart.forEach(item => {
-                    const product = getProductById(item.productId);
-                    if (product && product.promoEligible) discountableAmount += item.totalPrice;
-                });
-            } else {
-                discountableAmount = subTotal;
-            }
-            if (promo.type === 'percent') discount = (discountableAmount * promo.value) / 100;
-            else discount = promo.value;
+    function submitOrder() {
+        if (!cart.length) {
+            toast('❌ Ton panier est vide.');
+            return;
         }
-        if (discount > subTotal) discount = subTotal;
-        const totalPrice = subTotal - discount;
+        const phone = (document.getElementById('customer-phone')?.value || '').trim();
+        const modeSelect = document.getElementById('delivery-mode');
+        const mode = modeSelect?.value || 'Retrait sur place';
+        const address = (document.getElementById('delivery-address')?.value || '').trim();
 
-        const date = new Date();
-        const formattedDate = `${date.getDate()} ${date.toLocaleString('fr-FR', { month: 'long' })} ${date.getFullYear()} a ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        if (mode === 'Livraison' && !address) {
+            toast('📍 Indique ton adresse de livraison.');
+            document.getElementById('delivery-address')?.focus();
+            return;
+        }
 
-        let message = "NOUVELLE COMMANDE\n\n====================\nRESUME:\n";
-        message += `- ${totalItems} article${totalItems > 1 ? 's' : ''} commande\n`;
-        message += `- Méthode de paiement: ${paymentMethod}\n====================\nDETAIL DES ARTICLES:\n`;
-        cart.forEach((item) => {
-            message += `\n- ${item.name}`;
-            message += `\n  Quantite: ${item.quantity}x ${item.weight}`;
-            message += `\n  Prix unitaire: ${item.unitPrice.toFixed(2)}e`;
-            message += `\n  Sous-total: ${item.totalPrice.toFixed(2)} EUR`;
-        });
-        message += `\n\n====================\n\nSOUS-TOTAL: ${subTotal.toFixed(2)} EUR`;
-        if (discount > 0) message += `\nREDUCTION (${appliedPromo}): -${discount.toFixed(2)} EUR`;
-        message += `\nTOTAL FINAL: ${totalPrice.toFixed(2)} EUR`;
-        message += " \n-LIVRAISON: A convenir\n \n-CONTACT: Merci de confirmer cette commande\n";
-        message += ` \n-Commande passee le: ${formattedDate}\n`;
-        return message;
+        const orderId = createClientOrderId();
+        const payload = buildPayload(orderId);
+        const raw = JSON.stringify(payload);
+        if (raw.length > 3900) {
+            toast('Commande trop volumineuse.');
+            return;
+        }
+
+        if (!tg || typeof tg.sendData !== 'function') {
+            toast('⚠️ Ouvre la boutique depuis le bouton /start.');
+            return;
+        }
+
+        try {
+            tg.sendData(raw);
+            orders.unshift({
+                order_id: orderId,
+                created_at: new Date().toISOString(),
+                status: 'new',
+                total: payload.total,
+                mode: payload.mode,
+                items: payload.items
+            });
+            orders = orders.slice(0, 50);
+            cart = [];
+            saveState();
+            updateCartBadge();
+            renderCart();
+            renderOrders();
+            renderVIP();
+            haptic('success');
+            toast('✅ Commande envoyée !');
+            setTab('orders');
+        } catch (e) {
+            console.error(e);
+            toast('⚠️ Impossible d’envoyer la commande.');
+        }
     }
 
-    // --- GESTION CLICK ---
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const pageId = item.dataset.page;
-            if (!pageId) return;
-            if (pageId === 'page-contact') renderContactPage();
-            if (pageId === 'page-home') {
-                currentView = 'categories';
-                currentCategoryId = null;
-                currentFarmId = null;
-                currentFilters.searchTerm = '';
-                document.getElementById('search-filter').value = '';
-                renderHomePage();
+    function renderOrders() {
+        const container = document.getElementById('orders-list');
+        if (!container) return;
+        if (!orders.length) {
+            container.innerHTML = `<div class="empty-state big"><span>🧾</span><strong>Aucune commande.</strong><p>Les commandes envoyées depuis cette Mini App apparaîtront ici.</p></div>`;
+            return;
+        }
+        container.innerHTML = orders.map(order => `
+            <article class="order-card">
+                <div class="order-card-top">
+                    <div><span class="eyebrow">COMMANDE</span><strong>${escapeHTML(order.order_id)}</strong></div>
+                    <span class="status-pill status-${escapeHTML(order.status || 'new')}">${STATUS_LABELS[order.status] || STATUS_LABELS.new}</span>
+                </div>
+                <div class="order-meta">
+                    <span>${new Date(order.created_at).toLocaleDateString('fr-FR')}</span>
+                    <span>${escapeHTML(order.mode || '')}</span>
+                    <b>${money(order.total)}</b>
+                </div>
+                <div class="order-products">${(order.items || []).slice(0,3).map(i => `<span>${escapeHTML(i.name)} · ${escapeHTML(i.weight)} × ${i.quantity}</span>`).join('')}</div>
+            </article>
+        `).join('');
+    }
+
+    function completedCount() {
+        return orders.filter(o => o.status === 'done').length;
+    }
+
+    function currentTier(count) {
+        return [...TIER_RULES].reverse().find(t => count >= t.min) || TIER_RULES[0];
+    }
+
+    function renderVIP() {
+        const count = completedCount();
+        const tier = currentTier(count);
+        const tierName = document.getElementById('vip-level');
+        const tierEmoji = document.getElementById('vip-medal');
+        const completed = document.getElementById('vip-completed');
+        const progress = document.getElementById('vip-progress');
+        const copy = document.getElementById('vip-copy');
+        const bar = document.getElementById('vip-progress-bar');
+
+        if (tierName) tierName.textContent = tier.name;
+        if (tierEmoji) tierEmoji.textContent = tier.emoji;
+        if (completed) completed.textContent = count;
+
+        if (tier.next == null) {
+            if (progress) progress.textContent = 'MAX';
+            if (copy) copy.textContent = 'Niveau maximum atteint.';
+            if (bar) bar.style.width = '100%';
+        } else {
+            const inTier = count - tier.min;
+            const span = tier.next - tier.min;
+            const remaining = tier.next - count;
+            if (progress) progress.textContent = `${inTier} / ${span}`;
+            if (copy) copy.textContent = `Encore ${remaining} commande${remaining > 1 ? 's' : ''} terminée${remaining > 1 ? 's' : ''} pour atteindre le niveau suivant.`;
+            if (bar) bar.style.width = `${Math.max(0, Math.min(100, (inTier/span)*100))}%`;
+        }
+    }
+
+    function syncOrderFromURL() {
+        const params = new URLSearchParams(location.search);
+        const orderId = params.get('sync_order');
+        const status = params.get('status');
+        if (orderId && status && STATUS_LABELS[status]) {
+            const order = orders.find(o => o.order_id === orderId);
+            if (order) {
+                order.status = status;
+                order.updated_at = new Date().toISOString();
+                saveState();
             }
-            showPage(pageId);
-        });
-    });
-
-    document.body.addEventListener('click', function (e) {
-        const target = e.target;
-
-        if (target.closest('#copy-order-btn')) {
-            const copyBtn = document.getElementById('copy-order-btn');
-            const contactBtn = document.getElementById('confirm-order-button');
-            copyBtn.classList.remove('main-action-btn');
-            copyBtn.classList.add('secondary-action-btn');
-            contactBtn.classList.remove('secondary-action-btn');
-            contactBtn.classList.add('main-action-btn');
-            contactBtn.disabled = false;
-            return;
         }
+        return params.get('tab');
+    }
 
-        // 1. CLIC CATEGORIE
-        const categoryCard = target.closest('.category-card');
-        if (categoryCard) {
-            const category = appData.find(c => c.id === categoryCard.dataset.categoryId);
-            
-            if (category.products) {
-                // Si produits directs (Edibles, Extract)
-                currentView = 'simple_products';
-                currentCategoryId = category.id;
-            } else if (category.farms) {
-                // Si sous-catégories (Hash, Weed)
-                currentView = 'farms';
-                currentCategoryId = category.id;
-            }
-            currentFilters.searchTerm = '';
-            document.getElementById('search-filter').value = '';
-            renderHomePage();
-            return;
-        }
+    function setTab(tab) {
+        document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav-v2 button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`page-${tab}`)?.classList.add('active');
+        document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
 
-        // 2. CLIC FARM (Sous-Catégorie)
-        const farmBtn = target.closest('.farm-list-btn');
-        if (farmBtn) {
-            currentView = 'products';
-            currentFarmId = farmBtn.dataset.farmId;
-            currentFilters.searchTerm = '';
-            document.getElementById('search-filter').value = '';
-            renderHomePage();
-            return;
-        }
+        if (tab === 'home') renderHome();
+        if (tab === 'catalog') renderCatalogue();
+        if (tab === 'cart') renderCart();
+        if (tab === 'orders') renderOrders();
+        if (tab === 'vip') renderVIP();
 
-        // 3. RETOUR CATEGORIES
-        if (target.closest('.back-to-categories-btn')) {
-            currentView = 'categories';
-            currentCategoryId = null;
-            currentFilters.searchTerm = '';
-            document.getElementById('search-filter').value = '';
-            renderHomePage();
-            return;
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        haptic();
+    }
 
-        // 4. RETOUR FARMS
-        if (target.closest('.back-to-farms-btn')) {
-            currentView = 'farms';
-            currentFarmId = null;
-            currentFilters.searchTerm = '';
-            document.getElementById('search-filter').value = '';
-            renderHomePage();
-            return;
-        }
+    function openDrawer(open=true) {
+        document.getElementById('side-drawer')?.classList.toggle('open', open);
+        document.getElementById('drawer-backdrop')?.classList.toggle('open', open);
+    }
 
-        // 5. PRODUITS / ACTIONS
-        const productCard = target.closest('.product-item-card');
-        if (productCard) {
-            if (productCard.classList.contains('unclickable')) return;
-            renderProductPage(productCard.dataset.productId);
-            return;
-        }
-
-        if (target.closest('.accordion-header')) {
-            const accordionItem = target.closest('.accordion-header').parentElement;
-            document.querySelectorAll('#page-info .accordion-item.active').forEach(item => {
-                if (item !== accordionItem) item.classList.remove('active');
-            });
-            accordionItem.classList.toggle('active');
-            return;
-        }
-
-        if (target.closest('#apply-promo-btn')) {
-            const input = document.getElementById('promo-code-input');
-            const code = input.value.toUpperCase();
-            if (validPromoCodes[code]) {
-                appliedPromo = code;
-                tg.HapticFeedback.notificationOccurred('success');
-                showNotification('✅ Code promo appliqué !');
-            } else {
-                appliedPromo = null;
-                tg.HapticFeedback.notificationOccurred('error');
-                showNotification('❌ Code promo invalide.');
-            }
-            renderConfirmation();
-        }
-
-        if (target.closest('#remove-promo-btn')) {
-            appliedPromo = null;
-            showNotification('Code promo retiré.');
-            renderConfirmation();
-        }
-
-        if (target.closest('.delivery-mode-btn')) {
-            const btn = target.closest('.delivery-mode-btn');
-            orderMode = btn.dataset.mode || 'Livraison';
-            document.querySelectorAll('.delivery-mode-btn').forEach(el => {
-                el.classList.toggle('active', el === btn);
-            });
-            const addressInput = document.getElementById('order-address');
-            if (addressInput) {
-                const isDelivery = orderMode === 'Livraison';
-                addressInput.style.display = isDelivery ? 'block' : 'none';
-                addressInput.required = isDelivery;
-                if (!isDelivery) addressInput.value = '';
-            }
-            return;
-        }
-
-        if (target.closest('.payment-btn')) {
-            paymentMethod = target.closest('.payment-btn').dataset.method;
-            document.querySelectorAll('.payment-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.method === paymentMethod);
-            });
-        }
-
-        if (target.closest('.add-to-cart-btn')) {
-            const btn = target.closest('.add-to-cart-btn');
-            addToCart(btn.dataset.productId, btn.dataset.weight, parseFloat(btn.dataset.price));
-        }
-
-        if (target.closest('.quantity-btn')) {
-            const btn = target.closest('.quantity-btn');
-            updateQuantity(btn.dataset.id, btn.dataset.action);
-        }
-
-        if (target.closest('.close-button') || target.closest('#cart-continue-shopping') || target.closest('.back-button')) {
-            showPage('page-home');
-        }
-
-        if (target.closest('#home-cart-button')) {
-            renderCart();
-            showPage('page-cart');
-        }
-
-        if (target.closest('#checkout-button')) {
-            // 1. Vibration haptique pour confirmer le clic
-            tg.HapticFeedback.notificationOccurred('warning'); 
-            
-            // 2. On passe directement à la page de confirmation sans popup native
-            renderConfirmation();
-        }
-
-        if (target.closest('#confirmation-modify-order')) {
-            showPage('page-cart');
-        }
-
-        if (target.closest('#confirm-order-button')) {
-            if (cart.length === 0) {
-                showNotification('❌ Ton panier est vide.');
+    function initEvents() {
+        document.addEventListener('click', (e) => {
+            const tab = e.target.closest('[data-tab]');
+            if (tab) {
+                setTab(tab.dataset.tab);
                 return;
             }
 
-            const payload = buildOrderPayload();
-            if (payload.mode === 'Livraison' && !payload.address) {
-                showNotification('📍 Indique ton adresse de livraison.');
-                document.getElementById('order-address')?.focus();
+            const cat = e.target.closest('[data-open-category]');
+            if (cat) {
+                activeCategory = cat.dataset.openCategory;
+                setTab('catalog');
+                renderCatalogue();
                 return;
             }
 
-            const rawData = JSON.stringify(payload);
-            if (rawData.length > 3900) {
-                showNotification('❌ Commande trop volumineuse. Réduis le panier ou le commentaire.');
+            const chip = e.target.closest('[data-filter-category]');
+            if (chip) {
+                activeCategory = chip.dataset.filterCategory;
+                renderCatalogue();
                 return;
             }
 
-            try {
-                if (typeof tg.sendData !== 'function') {
-                    throw new Error('Telegram.WebApp.sendData indisponible');
+            const productBtn = e.target.closest('[data-product-id]');
+            if (productBtn) {
+                openProduct(productBtn.dataset.productId);
+                return;
+            }
+
+            const add = e.target.closest('[data-add-product]');
+            if (add) {
+                addToCart(add.dataset.addProduct, add.dataset.weight, Number(add.dataset.price));
+                return;
+            }
+
+            const delta = e.target.closest('[data-cart-delta]');
+            if (delta) {
+                changeQty(delta.dataset.cartId, Number(delta.dataset.cartDelta));
+                return;
+            }
+
+            if (e.target.closest('#open-menu')) openDrawer(true);
+            if (e.target.closest('#close-menu') || e.target.closest('#drawer-backdrop')) openDrawer(false);
+            if (e.target.closest('#close-product')) document.getElementById('product-modal')?.classList.remove('open');
+            if (e.target.closest('#hero-catalog-btn')) setTab('catalog');
+            if (e.target.closest('[data-hero-mode]')) {
+                const mode = e.target.closest('[data-hero-mode]').dataset.heroMode;
+                setTab('cart');
+                const select = document.getElementById('delivery-mode');
+                if (select) {
+                    select.value = mode;
+                    updateModeUI();
                 }
-                tg.HapticFeedback.notificationOccurred('success');
-                showNotification('✅ Commande envoyée au bot !');
-                tg.sendData(rawData);
-            } catch (error) {
-                console.error(error);
-                showNotification('⚠️ Relance /start et ouvre la boutique avec le bouton du bot.');
             }
-        }
-    });
+            if (e.target.closest('#submit-order')) submitOrder();
+            if (e.target.closest('#open-contact')) {
+                if (tg?.openTelegramLink) tg.openTelegramLink(ORDER_CONTACT_URL);
+                else location.href = ORDER_CONTACT_URL;
+            }
+        });
+
+        document.getElementById('catalog-search')?.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            renderCatalogue();
+        });
+        document.getElementById('delivery-mode')?.addEventListener('change', updateModeUI);
+        document.querySelectorAll('[data-payment]').forEach(btn => btn.addEventListener('click', () => {
+            paymentMethod = btn.dataset.payment;
+            document.querySelectorAll('[data-payment]').forEach(x => x.classList.toggle('active', x === btn));
+        }));
+    }
 
     function init() {
-        setTimeout(() => {
-            populateFilters();
-            renderHomePage();
-            updateCartCount();
-            showPage('page-home');
-        }, 1500);
+        renderShopHeader();
+        updateCartBadge();
+        renderHome();
+        renderCatalogue();
+        renderCart();
+        renderOrders();
+        renderVIP();
+        initEvents();
+
+        const requestedTab = syncOrderFromURL();
+        renderOrders();
+        renderVIP();
+        setTab(['home','catalog','vip','cart','orders'].includes(requestedTab) ? requestedTab : 'home');
     }
 
     init();
