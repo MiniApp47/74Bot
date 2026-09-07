@@ -460,10 +460,11 @@ const appData = [
     function categoryIcon(category) {
         const value = `${category.name || ''} ${category.type || ''}`.toLowerCase();
         if (value.includes('fleur') || value.includes('weed')) return '🌿';
-        if (value.includes('résine') || value.includes('resine') || value.includes('hash')) return '🟫';
-        if (value.includes('puff') || value.includes('vape')) return '💨';
-        if (value.includes('extra')) return '❄️';
-        if (value.includes('collection')) return '🎁';
+        if (value.includes('résine') || value.includes('resine') || value.includes('hash')) return '🍫';
+        if (value.includes('blanche') || value.includes('blanche')) return '💨';
+        if (value.includes('exta')) return '🍬';
+        if (value.includes('mdma')) return '💎';
+        if (value.includes('keta')) return '🔥';
         return '✨';
     }
 
