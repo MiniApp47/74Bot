@@ -20,6 +20,23 @@ const appData = [
         quality: 'WEED 🌿',
         image: 'CategVape.png',
         products: [
+           /*  {
+                        id: '🌈 Runtz Californienne',
+                        name: '🌈 Runtz Californienne',
+                        flag: '🇺🇸',
+                        farm: 'Premium Quality 🏆',
+                        promoEligible: true,
+                        type: 'Weed',
+                        image: 'ProductCali.jpg',
+                        video: 'VideoCali.mov',
+                        description: 'La Runtz californienne est une variété d’exception qui attire immédiatement l’œil avec ses têtes compactes, colorées et ultra résineuses. On y retrouve de magnifiques nuances vert clair, parfois violettes, recouvertes d’une épaisse couche de trichomes brillants qui témoignent de sa qualité premium. ✨🌿  \n\n 👃 Arômes & Goût\n Dès l’ouverture, un parfum sucré et fruité envahit l’air. La Runtz est célèbre pour son goût de bonbons fruités, mêlant des notes de fruits tropicaux, de sucre et de crème douce. Une fumée douce, gourmande et très agréable, parfaite pour les amateurs de saveurs sucrées. 🍬🍓🥭 \n\n ⚡ Effets\n  La Runtz offre un équilibre parfait entre euphorie et détente.\n   🧠 High mental positif – sensation de bien-être et d’euphorie\n  😌 Relaxation corporelle – détente progressive et agréable \n\n  💎 Une variété venue de Californie, très recherchée pour son goût unique, sa puissance et la beauté de ses buds. Parfaite pour ceux qui veulent une expérience savoureuse et de haute qualité.',
+                        tarifs: [
+                            { weight: '1 bags 3.5G', price: 50.00 }, 
+                            { weight: '2 bags', price: 100.00 }, 
+                            { weight: '3 bags', price: 130.00 }, 
+                            { weight: '5 bags', price: 220.00 }
+                        ]
+                    }  */
                 ]
 
 },
@@ -33,6 +50,7 @@ const appData = [
                 ]
 
 },
+
      {
         id: 'BLANCHE ⛰',
         name: 'BLANCHE ⛰',
@@ -41,21 +59,23 @@ const appData = [
         image: 'CategVape.png',
         products: [
                     {
-                        id: '🌈 Runtz Californienne',
-                        name: '🌈 Runtz Californienne',
+                        id: 'Zip',
+                        name: 'Zip 🌟',
                         flag: '🇺🇸',
                         farm: 'Premium Quality 🏆',
                         promoEligible: true,
                         type: 'Weed',
-                        image: 'ProductCali.jpg',
-                        video: 'VideoCali.mov',
-                        description: 'La Runtz californienne est une variété d’exception qui attire immédiatement l’œil avec ses têtes compactes, colorées et ultra résineuses. On y retrouve de magnifiques nuances vert clair, parfois violettes, recouvertes d’une épaisse couche de trichomes brillants qui témoignent de sa qualité premium. ✨🌿  \n\n 👃 Arômes & Goût\n Dès l’ouverture, un parfum sucré et fruité envahit l’air. La Runtz est célèbre pour son goût de bonbons fruités, mêlant des notes de fruits tropicaux, de sucre et de crème douce. Une fumée douce, gourmande et très agréable, parfaite pour les amateurs de saveurs sucrées. 🍬🍓🥭 \n\n ⚡ Effets\n  La Runtz offre un équilibre parfait entre euphorie et détente.\n   🧠 High mental positif – sensation de bien-être et d’euphorie\n  😌 Relaxation corporelle – détente progressive et agréable \n\n  💎 Une variété venue de Californie, très recherchée pour son goût unique, sa puissance et la beauté de ses buds. Parfaite pour ceux qui veulent une expérience savoureuse et de haute qualité.',
+                        image: 'ProductZ.png',
+                        video: 'VideoZ.mp4',
+                        description: '',
                         tarifs: [
-                            { weight: '1 bags 3.5G', price: 50.00 }, 
-                            { weight: '2 bags', price: 100.00 }, 
-                            { weight: '3 bags', price: 130.00 }, 
-                            { weight: '5 bags', price: 220.00 }
-                        ]
+                            { weight: '1g', price: 60.00 }, 
+                            { weight: '10g', price: 450.00 }, 
+{
+    weight: '100g',
+    price: 0.00,
+    contactOnly: true
+}                        ]
                     }
                 ]
 
@@ -67,6 +87,22 @@ const appData = [
         quality: 'EXTA 💊',
         image: 'CategVape.png',
         products: [
+             {
+                        id: 'Exta',
+                        name: 'Exta 💫',
+                        flag: '',
+                        farm: 'Premium Quality 🏆',
+                        promoEligible: true,
+                        type: 'Weed',
+                        image: 'ProductEX.jpg',
+                        video: '',
+                        description: '',
+                        tarifs: [
+                            { weight: '1', price: 5.00 }, 
+                            { weight: '10', price: 50.00 }, 
+                            { weight: '100', price: 450.00 }
+                        ]
+                    }
                 ]
 
 },
@@ -77,6 +113,21 @@ const appData = [
         quality: 'MDMA 🔎',
         image: 'CategVape.png',
         products: [
+            {
+                        id: '3mmc',
+                        name: '3mmc 💣',
+                        flag: '',
+                        farm: 'Premium Quality 🏆',
+                        promoEligible: true,
+                        type: 'Weed',
+                        image: 'Product3.jpg',
+                        video: 'Video3.mp4',
+                        description: '',
+                        tarifs: [
+                            { weight: '1g', price: 45.00 }, 
+                            { weight: '10', price: 450.00 }, 
+                        ]
+                    }
                 ]
 
 },
@@ -87,183 +138,26 @@ const appData = [
         quality: 'KETA 🌶️',
         image: 'CategVape.png',
         products: [
+               {
+                        id: 'Keta',
+                        name: 'Keta 🏎️',
+                        flag: '',
+                        farm: 'Premium Quality 🏆',
+                        promoEligible: true,
+                        type: 'Weed',
+                        image: 'ProductK.jpg',
+                        video: 'VideoK.mp4',
+                        description: '',
+                        tarifs: [
+                            { weight: '1g', price: 25.00 }, 
+                            { weight: '10', price: 250.00 }, 
+                        ]
+                    }
                 ]
 
 },
 
-  /*           farms: [
-             {
-                id: 'BLANCHE ⛰',
-                name: 'BLANCHE ⛰',
-                badgeText: 'BLANCHE ⛰',
-                products: [
-                    {
-                        id: '🌈 Runtz Californienne',
-                        name: '🌈 Runtz Californienne',
-                        flag: '🇺🇸',
-                        farm: 'Premium Quality 🏆',
-                        promoEligible: true,
-                        type: 'Weed',
-                        image: 'ProductCali.jpg',
-                        video: 'VideoCali.mov',
-                        description: 'La Runtz californienne est une variété d’exception qui attire immédiatement l’œil avec ses têtes compactes, colorées et ultra résineuses. On y retrouve de magnifiques nuances vert clair, parfois violettes, recouvertes d’une épaisse couche de trichomes brillants qui témoignent de sa qualité premium. ✨🌿  \n\n 👃 Arômes & Goût\n Dès l’ouverture, un parfum sucré et fruité envahit l’air. La Runtz est célèbre pour son goût de bonbons fruités, mêlant des notes de fruits tropicaux, de sucre et de crème douce. Une fumée douce, gourmande et très agréable, parfaite pour les amateurs de saveurs sucrées. 🍬🍓🥭 \n\n ⚡ Effets\n  La Runtz offre un équilibre parfait entre euphorie et détente.\n   🧠 High mental positif – sensation de bien-être et d’euphorie\n  😌 Relaxation corporelle – détente progressive et agréable \n\n  💎 Une variété venue de Californie, très recherchée pour son goût unique, sa puissance et la beauté de ses buds. Parfaite pour ceux qui veulent une expérience savoureuse et de haute qualité.',
-                        tarifs: [
-                            { weight: '1 bags 3.5G', price: 50.00 }, 
-                            { weight: '2 bags', price: 100.00 }, 
-                            { weight: '3 bags', price: 130.00 }, 
-                            { weight: '5 bags', price: 220.00 }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: 'EXTA 💊',
-                name: 'EXTA 💊',
-                badgeText: 'EXTA 💊',
-                products: [
-
-                ]
-            },
-            {
-                id: 'MDMA 🔎',
-                name: 'MDMA 🔎',
-                badgeText: 'MDMA 🔎',
-                products: [
-
-                ]
-            },
-            {
-                id: 'KETA 🌶️',
-                name: 'KETA 🌶️',
-                badgeText: 'KETA 🌶️',
-                products: [
-
-                ]
-            },
-           
-        ] */
-        
-    
-   /*  {
-        id: 'HASH',
-        name: '🍫 HASH',
-        type: 'Hash',
-        quality: '🍫 HASH',
-        image: 'CategHash.png', 
-        farms: [
-          /*   {
-                id: 'Extraction',
-                name: 'Extraction 🧬',
-                badgeText: 'Ice-O-Lator',
-                products: [
-                    {
-                        id: 'RUNTZ 🍬❄️',
-                        name: 'RUNTZ 🍬❄️',
-                        flag: '🇺🇸',
-                        farm: 'HASHPOWER – ICE-O-LATOR FARM 👨🏽‍🔬',
-                        promoEligible: true,
-                        type: 'Hash',
-                        image: 'ProductIceO.jpg',
-                        video: 'VideoIceO.mov',
-                        description: 'Plonge dans l’excellence du hash moderne avec HASHPOWER Ice-O-Lator Farm – Runtz, une extraction premium conçue pour les vrais connaisseurs. Issue d’une sélection rigoureuse de fleurs Runtz, cette Ice-O-Lator capture toute la puissance aromatique et la richesse des trichomes grâce à une extraction à l’eau glacée qui préserve l’essence pure de la plante.\n\n ✨ Profil & Arômes\n\n La Runtz révèle un bouquet intense et gourmand :\n  • 🍭 notes sucrées et fruitées rappelant les bonbons\n  • 🍇 touches tropicales et crémeuses\n  • 🌿 finale résineuse et légèrement épicée \n Chaque bouffée offre une expérience riche, douce et extrêmement terpènique.  \n\n  ❄️ Extraction Ice-O-Lator  \n\n  La méthode Ice-O-Lator permet de séparer les trichomes à froid pour produire un hash : \n   • ultra pur \n   • riche en terpènes  \n   • texture sableuse à légèrement collante  \n   • fusion lente et propre   \n Résultat : une qualité supérieure avec une puissance et un goût incomparables.    \n\n 🔥 Effets  \n\n La Runtz est réputée pour son équilibre parfait : \n  • montée euphorique et créative \n  • relaxation profonde du corps \n  • sensation smooth et durable  \n Idéal pour chiller, créer ou partager un moment premium.  \n\n 🧊 Signature HASHPOWER \n  • 🌱 100 % Single Source \n  • ❄️ extraction Ice-O-Lator artisanale \n  • 💎 qualité haut de gamme \n  • 🔒 drop limité   \n HASHPOWER – Runtz Ice-O-Lator : la rencontre entre puissance, pureté et saveurs légendaires.',
-                        tarifs: [
-                            { weight: '1g', price: 35.00 }, 
-                            { weight: '5g', price: 160.00 },
-                            { weight: '10g', price: 260.00 }, 
-                            { weight: '20g', price: 500.00 }, 
-                            { weight: '50g', price: 1000.00 }
-                    ]
-                    }
-                ]
-            }, 
-            {
-                id: 'MOUSS',
-                name: 'MOUSSEUX 🍯',
-                badgeText: 'Classic Sift',
-                products: [
-                    /* {
-                        id: 'mouss-standard',
-                        name: 'Jaune Mousseux',
-                        flag: '🇲🇦',
-                        farm: 'MISTER FREEZE 74 SELECTION',
-                        promoEligible: true,
-                        type: 'Hash',
-                        image: 'ProductDry.jpg',
-                        description: 'Texture parfaite, facile à effriter.',
-                        tarifs: [{ weight: '10g', price: 40.00 }, { weight: '20g', price: 75.00 }]
-                    } 
-                ]
-            },
-            {
-                id: 'FROZEN',
-                name: 'FROZEN 🧊',
-                badgeText: 'Fresh Frozen Tech',
-                products: [
-                   /*  {
-                        id: 'frozen-gmo-marocain',
-                        name: '🌿 GMO – Marocain',
-                        flag: '🇲🇦',
-                        farm: '🏹 MISTER FREEZE 74 SELECTION',
-                        promoEligible: true,
-                        type: 'Hash',
-                        image: 'ProductGmo.jpg',
-                        video: 'VideoGmo.mov',
-                        description: 'Un concentré issu de fleurs GMO travaillées en fresh frozen, pour préserver au maximum les terpènes et la puissance aromatique.\nRésultat : un produit riche, expressif et ultra savoureux.\n\n👃 Arômes\nDès l’ouverture, c’est intense et profond :\n🧄 Notes aillées / funky typiques de la GMO\n🌍 Fond terreux et légèrement épicé\n🌲 Pointe résineuse bien marquée\n🍪 Subtile touche sucrée en arrière-plan\n\nProfil terpène puissant, qui reste longtemps en bouche.\n\n👁 Aspect\n• Texture compacte et résineuse\n• Couleur brune à dorée selon la méthode\n• Surface légèrement brillante\n• Odeur forte et caractéristique\n\nOn sent le travail sur la matière première, surtout avec le procédé fresh frozen qui conserve les arômes.\n\n💨 Effets\n⚡ Montée cérébrale marquée\n😌 Relaxation corporelle progressive\n🌙 Idéal en fin de journée\n\nPuissant, enveloppant, avec un vrai caractère.',
-                        tarifs: [
-                            { weight: '5g', price: 60.00 },
-                            { weight: '10g', price: 110.00 },
-                            { weight: '20g', price: 200.00 },
-                            { weight: '50g', price: 400.00 },
-                            { weight: '100g', price: 700.00 }
-                        ]
-                    }, */
-                    /* {
-                        id: 'grap-gaz-frozen-premium',
-                        name: '🍇GRAP GAZ⛽️X BLEU PINT🫐',
-                        flag: '🇲🇦',
-                        farm: 'INTHEWEST FARM',
-                        promoEligible: true,
-                        type: 'Hash',
-                        image: 'ProductGrap.jpg',
-                        video: 'VideoGrap.mov',
-                        description: 'Un produit marocain haut de gamme, travaillé avec soin et précision.\nFrozen Premium incarne la nouvelle génération : pureté, puissance et finition premium.\n\n🧊 Profil frais & clean\nNotes glacées, légèrement sucrées, avec une touche résineuse intense.\nUne fumée douce, épaisse et parfaitement maîtrisée.\n\n💎 Qualité Premium – In The West Farm\nAspect givré, texture compacte, travail soigné et sélection rigoureuse.\n\n🔥 Effet profond & chill\nRelaxation intense, vibes posées, idéal pour décrocher et profiter du moment.\n\nFrozen Premium\n👉 Fraîcheur extrême\n👉 Savoir-faire marocain 🇲🇦\n👉 Niveau premium garanti',
-                        tarifs: [
-                            { weight: '5g', price: 80.00 },
-                            { weight: '10g', price: 150.00 },
-                            { weight: '20g', price: 290.00 },
-                            { weight: '30g', price: 420.00 },
-                            { weight: '50g', price: 550.00 }
-                        ]
-                    } 
-                ]
-            },
-            {
-                id: 'STATIC',
-                name: 'STATIC 🇲🇦⚡️',
-                badgeText: 'High Voltage',
-                products: [
-                    /* {
-                        id: 'Tangie 🍊',
-                        name: 'Tangie 🍊',
-                        flag: '🇲🇦',
-                        farm: 'PJS Farm 🌿',
-                        promoEligible: true,
-                        type: 'STATIC',
-                        image: 'ProductTangie.jpg',
-                        video: 'VideoTangie.mov',
-                        description: 'Plasma Static ⚡❄️ \n\n Une décharge d’agrumes sous haute tension. ⚡\n\n Issu d’un travail de précision signé PJS Farm, Plasma Static Tangie repousse les standards avec une extraction maîtrisée et un rendu visuel aussi pur que spectaculaire.\n\n  Dès l’ouverture 💥, le profil aromatique explose : zeste d’orange fraîche 🍊, mandarine juteuse, touches sucrées et légèrement acidulées qui rappellent un jus d’agrumes fraîchement pressé. La signature Tangie s’exprime pleinement — vive, lumineuse et incroyablement addictive.\n\n La texture est fine, brillante et aérienne ✨, avec un aspect statique saisissant qui témoigne d’un produit hautement qualitatif. Chaque détail respire la fraîcheur, la précision et le savoir-faire artisanal.\n\nPlasma Static Tangie, c’est l’équilibre parfait entre intensité aromatique, élégance visuelle et pureté extrême.\n Un produit vibrant, énergisant et résolument premium ⚡🍊💎',
-                        tarifs: [
-                            { weight: '1g', price: 35.00 },
-                            { weight: '5g', price: 150.00 },
-                            { weight: '10g', price: 250.00 },
-                            { weight: '20g', price: 480.00 },
-                            { weight: '50g', price: 1000.00 }
-                        ]
-                    }, 
-                ]
-            },
-        ]
-    },
+        /*
     {
         id: 'WEED',
         name: '🍀 WEED',
@@ -601,14 +495,27 @@ const appData = [
         if (!modal || !body) return;
 
         const priceRows = (product.tarifs || []).map(t => `
-            <div class="price-row-v2">
-                <div>
-                    <strong>${escapeHTML(t.weight)}</strong>
-                    <span>${money(t.price)}</span>
-                </div>
-                <button class="add-cart-round" data-add-product="${escapeHTML(product.id)}" data-weight="${escapeHTML(t.weight)}" data-price="${Number(t.price)}">+</button>
-            </div>
-        `).join('');
+    <div class="price-row-v2">
+        <div>
+            <strong>${escapeHTML(t.weight)}</strong>
+            <span>${money(t.price)}</span>
+        </div>
+
+        ${
+            t.contactOnly
+            ? `<button class="private-order-btn"
+                       data-private-order="1">
+                   💬 Commander en privé
+               </button>`
+            : `<button class="add-cart-round"
+                       data-add-product="${escapeHTML(product.id)}"
+                       data-weight="${escapeHTML(t.weight)}"
+                       data-price="${Number(t.price)}">
+                   +
+               </button>`
+        }
+    </div>
+`).join('');
 
         body.innerHTML = `
             <div class="product-detail-visual">
@@ -925,6 +832,16 @@ const appData = [
                 openProduct(productBtn.dataset.productId);
                 return;
             }
+
+            const privateOrder = e.target.closest('[data-private-order]');
+if (privateOrder) {
+    if (tg?.openTelegramLink) {
+        tg.openTelegramLink(ORDER_CONTACT_URL);
+    } else {
+        window.location.href = ORDER_CONTACT_URL;
+    }
+    return;
+}
 
             const add = e.target.closest('[data-add-product]');
             if (add) {
