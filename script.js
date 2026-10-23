@@ -47,6 +47,96 @@ const appData = [
         quality: 'HASH 🍫',
         image: 'CategVape.png',
         products: [
+             {
+                        id: 'Mint Pie 🥧',
+                        name: 'Mint Pie 🥧',
+                        flag: '🍫',
+                        farm: 'Bad bered 🏆',
+                        promoEligible: true,
+                        type: '90U 🍎',
+                        image: 'ProductMP.jpg',
+                        video: '',
+                        description: '90U 🍎',
+                        tarifs: [
+                            { weight: '5G', price: 60.00 },
+                            { weight: '10G', price: 110.00 }, 
+                        ]
+                    },
+             {
+                        id: '🍌 HoneyBanana X OrangeMints 🍊',
+                        name: '🍌 HoneyBanana X OrangeMints 🍊',
+                        flag: '🍫',
+                        farm: 'GazFruit 🏆',
+                        promoEligible: true,
+                        type: '105 Micron 🧪',
+                        image: 'ProductHO.jpg',
+                        video: '',
+                        description: '105 Micron 🧪',
+                        tarifs: [
+                            { weight: '5G', price: 80.00 },
+                            { weight: '10G', price: 150.00 }, 
+                        ]
+                    },
+             {
+                        id: '🍔 HashBurger X Grape gas 🍇',
+                        name: '🍔 HashBurger X Grape gas 🍇',
+                        flag: '🍫',
+                        farm: 'GazFruit 🏆',
+                        promoEligible: true,
+                        type: '105 Micron 🧪',
+                        image: 'ProductHB.jpg',
+                        video: '',
+                        description: '105 Micron 🧪',
+                        tarifs: [
+                            { weight: '5G', price: 80.00 },
+                            { weight: '10G', price: 150.00 }, 
+                        ]
+                    },
+             {
+                        id: 'FF 🍍🍓🍇',
+                        name: 'FF 🍍🍓🍇',
+                        flag: '🍫',
+                        farm: 'Frutatech 🏆',
+                        promoEligible: true,
+                        type: 'Frozen 🪼',
+                        image: 'ProductFF.jpg',
+                        video: '',
+                        description: 'Frozen 🪼',
+                        tarifs: [
+                            { weight: '5G', price: 80.00 },
+                            { weight: '10G', price: 150.00 }, 
+                        ]
+                    },
+             {
+                        id: 'HB 🍪',
+                        name: 'HB 🍪',
+                        flag: '🍫',
+                        farm: 'HaramBoyz 🏆',
+                        promoEligible: true,
+                        type: 'Fresh Frozen 🍃',
+                        image: 'ProductYM.jpg',
+                        video: '',
+                        description: 'Fresh Frozen 🍃',
+                        tarifs: [
+                            { weight: '5G', price: 80.00 },
+                            { weight: '10G', price: 180.00 }, 
+                        ]
+                    },
+             {
+                        id: 'Yellow Melon Tropicanna 🍈',
+                        name: 'Yellow Melon Tropicanna 🍈',
+                        flag: '🍫',
+                        farm: 'HaramBoyz 🏆',
+                        promoEligible: true,
+                        type: 'Frozen-Sift 🧊',
+                        image: 'ProductYMT.jpg',
+                        video: '',
+                        description: 'Frozen-Sift 🧊',
+                        tarifs: [
+                            { weight: '5G', price: 80.00 },
+                            { weight: '10G', price: 150.00 }, 
+                        ]
+                    } 
                 ]
 
 },
